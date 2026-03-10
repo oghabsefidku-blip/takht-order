@@ -251,12 +251,14 @@
         if(!res.ok) return null;
 
         const data = await res.json();
+        console.log("SERVER ORDER RAW:", data);
 
         if(data && data.order) return data.order;
         if(data && data.id) return data;
 
         return null;
       }catch(e){
+        console.log("FETCH ORDER ERROR:", e);
         return null;
       }
     }
@@ -298,17 +300,39 @@
       normalized.items = normalized.items.map(item => ({
         title: item.title ?? item.name ?? "",
         name: item.name ?? item.title ?? "",
-        qty: item.qty ?? item.quantity ?? 1,
-        quantity: item.quantity ?? item.qty ?? 1,
-        price: item.price ?? item.unitPrice ?? item.cost ?? 0,
+        qty: Number(item.qty ?? item.quantity ?? 1),
+        quantity: Number(item.quantity ?? item.qty ?? 1),
+        price: Number(item.price ?? item.unitPrice ?? item.cost ?? 0),
         row_total:
-          item.row_total ??
-          item.rowTotal ??
-          ((Number(item.qty ?? item.quantity ?? 0)) * Number(item.price ?? item.unitPrice ?? item.cost ?? 0)),
+          Number(
+            item.row_total ??
+            item.rowTotal ??
+            (Number(item.qty ?? item.quantity ?? 0) * Number(item.price ?? item.unitPrice ?? item.cost ?? 0))
+          ),
         image: item.image ?? item.img ?? item.photo ?? ""
       }));
 
       return normalized;
+    }
+
+    function mergeOrders(serverOrder, sessionOrder, fallbackId){
+      const s1 = normalizeOrder(serverOrder, fallbackId);
+      const s2 = normalizeOrder(sessionOrder, fallbackId);
+
+      if (!s1 && !s2) return null;
+      if (!s1) return s2;
+      if (!s2) return s1;
+
+      const serverItems = Array.isArray(s1.items) ? s1.items : [];
+      const sessionItems = Array.isArray(s2.items) ? s2.items : [];
+
+      return {
+        orderId: s1.orderId || s2.orderId || fallbackId || "-",
+        name: s1.name && s1.name !== "-" ? s1.name : s2.name,
+        phone: s1.phone && s1.phone !== "-" ? s1.phone : s2.phone,
+        total: Number(s1.total || 0) || Number(s2.total || 0),
+        items: serverItems.length ? serverItems : sessionItems
+      };
     }
 
     function renderOrder(order){
@@ -366,15 +390,15 @@
 
     async function initPage(){
       const urlId = getOrderIdFromUrl();
+      const sessionOrder = readOrderFromSession();
+      const serverOrder = await fetchOrderFromServer(urlId);
 
-      let order = await fetchOrderFromServer(urlId);
+      console.log("URL ID:", urlId);
+      console.log("SESSION ORDER:", sessionOrder);
+      console.log("SERVER ORDER:", serverOrder);
 
-      if (!order) {
-        order = readOrderFromSession();
-      }
-
-      order = normalizeOrder(order, urlId);
-      renderOrder(order);
+      const finalOrder = mergeOrders(serverOrder, sessionOrder, urlId);
+      renderOrder(finalOrder);
     }
 
     initPage();
