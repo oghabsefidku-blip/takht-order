@@ -1,0 +1,1088 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>سفارش آنلاین</title>
+  <style>
+    *{box-sizing:border-box}
+
+    body{
+      font-family:tahoma,Arial;
+      margin:0;
+      color:#1f2937;
+      min-height:100vh;
+      background:
+        linear-gradient(rgba(248,245,238,0.78), rgba(248,245,238,0.78)),
+        url('/bg-logo.jpg') center center / cover no-repeat fixed;
+      overflow-x:hidden;
+    }
+
+    .glassBg{
+      position:fixed;
+      inset:0;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .wrap{
+      position:relative;
+      z-index:2;
+      max-width:1100px;
+      margin:24px auto;
+      padding:0 16px;
+    }
+
+    .card{
+      background:rgba(255,255,255,0.58);
+      border:1px solid rgba(255,255,255,0.42);
+      border-radius:20px;
+      padding:16px;
+      margin:14px 0;
+      box-shadow:0 10px 30px rgba(15,23,42,0.08);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    h1{
+      margin:10px 0 6px;
+      font-size:28px;
+      color:#8a5a1d;
+    }
+
+    h2{ color:#8a5a1d; }
+
+    .muted{ color:#6b7280; }
+
+    input,button,select,textarea{
+      font-family:inherit;
+    }
+
+    input[type="text"], input[type="tel"], textarea{
+      width:100%;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(203,213,225,0.9);
+      background:rgba(255,255,255,0.78);
+      color:#111827;
+      box-sizing:border-box;
+    }
+
+    textarea{
+      resize:vertical;
+      min-height:90px;
+    }
+
+    button{
+      padding:10px 12px;
+      border-radius:12px;
+      border:0;
+      cursor:pointer;
+      transition:0.2s ease;
+    }
+
+    button:hover{
+      transform:translateY(-1px);
+    }
+
+    .btn{
+      background:#22c55e;
+      color:#06210f;
+      font-weight:bold;
+    }
+
+    .btnGray{
+      background:#475569;
+      color:#fff;
+    }
+
+    .btnBlue{
+      background:#2563eb;
+      color:#fff;
+      font-weight:bold;
+    }
+
+    .grid2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    @media (max-width:720px){
+      .grid2{grid-template-columns:1fr}
+    }
+
+    .menuGrid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:12px;
+    }
+
+    @media (max-width:920px){
+      .menuGrid{grid-template-columns: repeat(2, 1fr)}
+    }
+
+    @media (max-width:520px){
+      .menuGrid{grid-template-columns: 1fr}
+    }
+
+    .item{
+      background:rgba(255,255,255,0.55);
+      border:1px solid rgba(255,255,255,0.45);
+      border-radius:16px;
+      padding:12px;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .menuItemImage{
+      width:100%;
+      height:180px;
+      object-fit:cover;
+      border-radius:12px;
+      display:block;
+      margin-bottom:8px;
+      background:#e5e7eb;
+      cursor:pointer;
+      transition:transform 0.2s ease;
+    }
+
+    .menuItemImage:hover{
+      transform:scale(1.02);
+    }
+
+    .imageOverlay{
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,0.72);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:9999;
+      padding:20px;
+    }
+
+    .imageOverlay.active{
+      display:flex;
+    }
+
+    .imageOverlay img{
+      max-width:min(92vw, 1100px);
+      max-height:88vh;
+      border-radius:18px;
+      background:#ffffff;
+      box-shadow:0 24px 80px rgba(0,0,0,0.45);
+    }
+
+    .imageOverlayClose{
+      position:absolute;
+      top:20px;
+      left:20px;
+      background:#ffffff;
+      color:#111827;
+      border:none;
+      border-radius:999px;
+      width:42px;
+      height:42px;
+      font-size:24px;
+      font-weight:bold;
+      cursor:pointer;
+    }
+
+    .row{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .qtyBox{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+
+    .qtyBox button{
+      width:40px;
+      height:40px;
+      border-radius:10px;
+      font-size:20px;
+      line-height:1;
+      background:rgba(226,232,240,0.88);
+      color:#111827;
+      font-weight:bold;
+    }
+
+    .qtyBox button:disabled{
+      opacity:0.5;
+      cursor:not-allowed;
+    }
+
+    .qty{
+      min-width:30px;
+      text-align:center;
+      font-weight:700;
+      font-size:22px;
+      color:#111827;
+    }
+
+    .pill{
+      display:inline-block;
+      padding:3px 10px;
+      border-radius:999px;
+      background:rgba(238,242,255,0.95);
+      color:#334155;
+      font-size:12px;
+    }
+
+    .err{ color:#dc2626; }
+    .ok{ color:#16a34a; }
+    .small{ font-size:12px; }
+
+    .step{ display:none; }
+    .step.active{ display:block; }
+
+    .langBtns{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+
+    .langBtn{
+      background:#2b66ff;
+      color:#fff;
+    }
+
+    .topBar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .linkBtn{
+      background:rgba(248,250,252,0.88);
+      color:#334155;
+      border:1px solid rgba(203,213,225,0.9);
+    }
+
+    .categoryTabs{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin:16px 0 18px;
+    }
+
+    .categoryTab{
+      background:rgba(255,247,237,0.92);
+      color:#8a5a1d;
+      border:1px solid #fed7aa;
+      font-weight:bold;
+    }
+
+    .categoryTab.active{
+      background:#8a5a1d;
+      color:#ffffff;
+      border-color:#8a5a1d;
+    }
+
+    .sectionTitle{
+      font-size:22px;
+      font-weight:700;
+      color:#7c4a14;
+      margin:6px 0 14px;
+      padding:8px 12px;
+      background:rgba(255,247,237,0.9);
+      border:1px solid #fed7aa;
+      border-radius:12px;
+    }
+
+    .splash{
+      position:fixed;
+      inset:0;
+      z-index:10000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#f8f5ee;
+      opacity:1;
+      visibility:visible;
+      transition:opacity 1s ease, visibility 1s ease;
+    }
+
+    .splash.hide{
+      opacity:0;
+      visibility:hidden;
+    }
+
+    .splash img{
+      width:min(58vw, 420px);
+      max-width:420px;
+      min-width:180px;
+      filter:drop-shadow(0 12px 26px rgba(90,48,0,0.15));
+      animation:splashPulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes splashPulse{
+      0%{transform:scale(0.96); opacity:0.88;}
+      50%{transform:scale(1); opacity:1;}
+      100%{transform:scale(0.96); opacity:0.88;}
+    }
+  </style>
+</head>
+<body>
+  <div id="splash" class="splash">
+    <img src="/bg-logo.jpg" alt="logo">
+  </div>
+
+  <div class="glassBg"></div>
+
+  <div class="wrap">
+
+    <div id="stepLang" class="card step active">
+      <div class="topBar">
+        <h1 id="t_choose_lang_title" style="margin:0">انتخاب زبان</h1>
+        <button class="linkBtn" id="btnResetAll" type="button">ریست</button>
+      </div>
+      <div class="muted" id="t_choose_lang_sub">لطفاً زبان را انتخاب کنید.</div>
+      <div class="langBtns">
+        <button class="langBtn" data-lang="fa" type="button">فارسی</button>
+        <button class="langBtn" data-lang="ar" type="button">العربية</button>
+        <button class="langBtn" data-lang="en" type="button">English</button>
+      </div>
+    </div>
+
+    <div id="stepInfo" class="card step">
+      <div class="topBar">
+        <h1 id="t_info_title" style="margin:0">اطلاعات مشتری</h1>
+        <button class="linkBtn" id="btnBackToLang" type="button">تغییر زبان</button>
+      </div>
+      <div class="muted" id="t_info_sub">نام و شماره، آدرس و توضیحات را وارد کنید، سپس تایید.</div>
+
+      <div class="grid2" style="margin-top:12px">
+        <div>
+          <label class="muted small" id="t_name_label">نام مشتری</label>
+          <input id="name" type="text" placeholder="نام شما" />
+        </div>
+        <div>
+          <label class="muted small" id="t_phone_label">شماره تماس</label>
+          <input id="phone" type="tel" placeholder="مثلاً 50000000" />
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <label class="muted small" id="t_address_label">آدرس متنی</label>
+        <textarea id="address" placeholder="آدرس کامل را بنویسید"></textarea>
+      </div>
+
+      <div style="margin-top:12px">
+        <label class="muted small" id="t_location_label">لوکیشن</label>
+        <input id="locationText" type="text" placeholder="لینک لوکیشن یا مختصات" />
+        <div class="row" style="margin-top:8px">
+          <button class="btnBlue" id="btnGetLocation" type="button">گرفتن لوکیشن فعلی</button>
+          <span id="locationMsg" class="small muted"></span>
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <label class="muted small" id="t_notes_label">ملاحظات / اقتراحات</label>
+        <textarea id="notes" placeholder="مثلاً بدون پیاز، تند باشد، زنگ نزنید..."></textarea>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <button class="btn" id="btnConfirmInfo" type="button">تایید و ادامه</button>
+        <span id="infoMsg" class="small"></span>
+      </div>
+    </div>
+
+    <div id="stepOrder" class="step">
+      <div class="topBar">
+        <div>
+          <h1 id="t_order_title" style="margin:0">سفارش آنلاین تخت جمشید</h1>
+          <div class="muted" id="t_order_sub">غذا را انتخاب کن و سفارش را ثبت کن.</div>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap">
+          <button class="linkBtn" id="btnEditInfo" type="button">ویرایش اطلاعات</button>
+          <button class="linkBtn" id="btnChangeLang" type="button">زبان</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row">
+          <h2 id="t_menu_title" style="margin:0">منو</h2>
+          <span class="pill" id="menuCount">0</span>
+        </div>
+
+        <div id="categoryTabs" class="categoryTabs"></div>
+
+        <div id="menu" style="margin-top:12px;"></div>
+        <div id="menuMsg" class="muted small" style="margin-top:10px;"></div>
+      </div>
+
+      <div class="card">
+        <div class="row">
+          <div>
+            <b id="t_total_label">جمع کل:</b> <span id="total">0</span>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap">
+            <button id="btnRefresh" class="btnGray" type="button">رفرش منو</button>
+            <button id="btnSubmit" class="btn" type="button">ثبت سفارش</button>
+          </div>
+        </div>
+        <div id="msg" class="small" style="margin-top:10px;"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="imageOverlay" class="imageOverlay">
+    <button id="imageOverlayClose" class="imageOverlayClose" type="button">×</button>
+    <img id="imageOverlayImg" src="" alt="">
+  </div>
+
+<script>
+  const $ = s => document.querySelector(s);
+
+  const I18N = {
+    fa: {
+      dir: "rtl", lang: "fa",
+      chooseLangTitle: "انتخاب زبان",
+      chooseLangSub: "لطفاً زبان را انتخاب کنید.",
+      reset: "ریست",
+      infoTitle: "اطلاعات مشتری",
+      infoSub: "نام و شماره، آدرس و توضیحات را وارد کنید، سپس تایید.",
+      changeLang: "تغییر زبان",
+      nameLabel: "نام مشتری",
+      phoneLabel: "شماره تماس",
+      addressLabel: "آدرس متنی",
+      locationLabel: "لوکیشن",
+      notesLabel: "ملاحظات / اقتراحات",
+      getLocation: "گرفتن لوکیشن فعلی",
+      locationLoading: "در حال دریافت لوکیشن...",
+      locationOk: "لوکیشن ثبت شد.",
+      locationFail: "دریافت لوکیشن انجام نشد.",
+      confirmContinue: "تایید و ادامه",
+      needNamePhone: "نام و شماره را کامل وارد کن.",
+      orderTitle: "سفارش آنلاین تخت جمشید",
+      orderSub: "غذا را انتخاب کن و سفارش را ثبت کن.",
+      editInfo: "ویرایش اطلاعات",
+      langBtn: "زبان",
+      menuTitle: "منو",
+      loading: "در حال بارگذاری…",
+      emptyMenu: "منو خالی است.",
+      total: "جمع کل:",
+      refresh: "رفرش منو",
+      submit: "ثبت سفارش",
+      chooseItems: "هیچ آیتمی انتخاب نشده.",
+      placing: "در حال ثبت سفارش…",
+      failedMenu: (e)=>"خطا در دریافت منو: " + e,
+      failedOrder: (e)=>"ثبت سفارش ناموفق: " + e,
+      price: "قیمت",
+      stock: "موجودی",
+      out: "ناموجود",
+      id: "شناسه",
+      cat_all: "همه",
+      cat_food: "غذاها",
+      cat_yogurt_salad: "ماست و سالاد",
+      cat_drinks: "نوشیدنی‌ها",
+      cat_desserts: "شیرینی‌ها",
+      cat_other: "سایر",
+      emptyCat: "موردی در این دسته وجود ندارد."
+    },
+    ar: {
+      dir: "rtl", lang: "ar",
+      chooseLangTitle: "اختر اللغة",
+      chooseLangSub: "يرجى اختيار اللغة.",
+      reset: "إعادة ضبط",
+      infoTitle: "بيانات العميل",
+      infoSub: "أدخل الاسم والرقم والعنوان والملاحظات ثم اضغط تأكيد.",
+      changeLang: "تغيير اللغة",
+      nameLabel: "اسم العميل",
+      phoneLabel: "رقم الهاتف",
+      addressLabel: "العنوان النصي",
+      locationLabel: "الموقع",
+      notesLabel: "ملاحظات / اقتراحات",
+      getLocation: "أخذ موقعي الحالي",
+      locationLoading: "جارٍ أخذ الموقع...",
+      locationOk: "تم حفظ الموقع.",
+      locationFail: "تعذر الحصول على الموقع.",
+      confirmContinue: "تأكيد والمتابعة",
+      needNamePhone: "أدخل الاسم ورقم الهاتف بالكامل.",
+      orderTitle: "طلب أونلاين",
+      orderSub: "اختر الطعام ثم سجّل الطلب.",
+      editInfo: "تعديل البيانات",
+      langBtn: "اللغة",
+      menuTitle: "المنيو",
+      loading: "جارٍ التحميل…",
+      emptyMenu: "المنيو فارغ.",
+      total: "المجموع:",
+      refresh: "تحديث المنيو",
+      submit: "تسجيل الطلب",
+      chooseItems: "لم يتم اختيار أي صنف.",
+      placing: "جارٍ تسجيل الطلب…",
+      failedMenu: (e)=>"خطأ في تحميل المنيو: " + e,
+      failedOrder: (e)=>"فشل تسجيل الطلب: " + e,
+      price: "السعر",
+      stock: "المتوفر",
+      out: "غير متوفر",
+      id: "المعرّف",
+      cat_all: "الكل",
+      cat_food: "الأطعمة",
+      cat_yogurt_salad: "اللبن والسلطات",
+      cat_drinks: "المشروبات",
+      cat_desserts: "الحلويات",
+      cat_other: "أصناف أخرى",
+      emptyCat: "لا توجد عناصر في هذا القسم."
+    },
+    en: {
+      dir: "ltr", lang: "en",
+      chooseLangTitle: "Choose language",
+      chooseLangSub: "Please select a language.",
+      reset: "Reset",
+      infoTitle: "Customer info",
+      infoSub: "Enter name, phone, address and notes, then confirm.",
+      changeLang: "Change language",
+      nameLabel: "Customer name",
+      phoneLabel: "Phone number",
+      addressLabel: "Text address",
+      locationLabel: "Location",
+      notesLabel: "Notes / Suggestions",
+      getLocation: "Use current location",
+      locationLoading: "Getting location...",
+      locationOk: "Location saved.",
+      locationFail: "Could not get location.",
+      confirmContinue: "Confirm & continue",
+      needNamePhone: "Please enter name and phone.",
+      orderTitle: "Online order",
+      orderSub: "Pick items and submit your order.",
+      editInfo: "Edit info",
+      langBtn: "Language",
+      menuTitle: "Menu",
+      loading: "Loading…",
+      emptyMenu: "Menu is empty.",
+      total: "Total:",
+      refresh: "Refresh menu",
+      submit: "Submit order",
+      chooseItems: "No items selected.",
+      placing: "Placing order…",
+      failedMenu: (e)=>"Failed to load menu: " + e,
+      failedOrder: (e)=>"Order failed: " + e,
+      price: "Price",
+      stock: "Stock",
+      out: "Out of stock",
+      id: "ID",
+      cat_all: "All",
+      cat_food: "Foods",
+      cat_yogurt_salad: "Yogurt & Salads",
+      cat_drinks: "Drinks",
+      cat_desserts: "Desserts",
+      cat_other: "Others",
+      emptyCat: "No items in this category."
+    }
+  };
+
+  function getSavedLang(){
+    return localStorage.getItem("takht_lang") || "ar";
+  }
+
+  function setSavedLang(l){
+    localStorage.setItem("takht_lang", l);
+  }
+
+  let LANG = getSavedLang();
+  let ACTIVE_CATEGORY = "all";
+
+  function applyLang(){
+    const t = I18N[LANG] || I18N.ar;
+
+    document.documentElement.lang = t.lang;
+    document.documentElement.dir = t.dir;
+
+    $("#t_choose_lang_title").textContent = t.chooseLangTitle;
+    $("#t_choose_lang_sub").textContent = t.chooseLangSub;
+    $("#btnResetAll").textContent = t.reset;
+
+    $("#t_info_title").textContent = t.infoTitle;
+    $("#t_info_sub").textContent = t.infoSub;
+    $("#btnBackToLang").textContent = t.changeLang;
+    $("#t_name_label").textContent = t.nameLabel;
+    $("#t_phone_label").textContent = t.phoneLabel;
+    $("#t_address_label").textContent = t.addressLabel;
+    $("#t_location_label").textContent = t.locationLabel;
+    $("#t_notes_label").textContent = t.notesLabel;
+    $("#btnGetLocation").textContent = t.getLocation;
+    $("#btnConfirmInfo").textContent = t.confirmContinue;
+
+    $("#t_order_title").textContent = t.orderTitle;
+    $("#t_order_sub").textContent = t.orderSub;
+    $("#btnEditInfo").textContent = t.editInfo;
+    $("#btnChangeLang").textContent = t.langBtn;
+    $("#t_menu_title").textContent = t.menuTitle;
+    $("#t_total_label").textContent = t.total;
+    $("#btnRefresh").textContent = t.refresh;
+    $("#btnSubmit").textContent = t.submit;
+
+    if (LANG === "fa") {
+      $("#name").placeholder = "نام شما";
+      $("#phone").placeholder = "مثلاً 50000000";
+      $("#address").placeholder = "آدرس کامل را بنویسید";
+      $("#locationText").placeholder = "لینک لوکیشن یا مختصات";
+      $("#notes").placeholder = "مثلاً بدون پیاز، تند باشد، زنگ نزنید...";
+    } else if (LANG === "ar") {
+      $("#name").placeholder = "اسمك";
+      $("#phone").placeholder = "مثال: 50000000";
+      $("#address").placeholder = "اكتب العنوان بالكامل";
+      $("#locationText").placeholder = "رابط الموقع أو الإحداثيات";
+      $("#notes").placeholder = "مثلاً بدون بصل، حار، لا تتصلوا...";
+    } else {
+      $("#name").placeholder = "Your name";
+      $("#phone").placeholder = "e.g. 50000000";
+      $("#address").placeholder = "Write the full address";
+      $("#locationText").placeholder = "Location link or coordinates";
+      $("#notes").placeholder = "For example: no onion, spicy, don't call...";
+    }
+
+    renderCategoryTabs();
+  }
+
+  function showStep(id){
+    ["stepLang","stepInfo","stepOrder"].forEach(x=>{
+      const el = document.getElementById(x);
+      el.classList.toggle("active", x===id);
+    });
+  }
+
+  async function apiJson(url, options){
+    const res = await fetch(url, options);
+    const txt = await res.text();
+    let j = null;
+
+    try {
+      j = JSON.parse(txt);
+    } catch(e) {
+      j = { ok:false, error:"Bad JSON from server", raw: txt };
+    }
+
+    if (!res.ok || !j.ok) throw new Error(j.error || ("HTTP " + res.status));
+    return j;
+  }
+
+  let menuRows = [];
+  const cart = new Map();
+  let customer = { name:"", phone:"", address:"", locationText:"", notes:"" };
+
+  function setMsg(text, type="muted"){
+    const el = $("#msg");
+    el.className = "small " + (type==="ok" ? "ok" : type==="err" ? "err" : "muted");
+    el.textContent = text || "";
+  }
+
+  function setInfoMsg(text, type="muted"){
+    const el = $("#infoMsg");
+    el.className = "small " + (type==="ok" ? "ok" : type==="err" ? "err" : "muted");
+    el.textContent = text || "";
+  }
+
+  function setLocationMsg(text, type="muted"){
+    const el = $("#locationMsg");
+    el.className = "small " + (type==="ok" ? "ok" : type==="err" ? "err" : "muted");
+    el.textContent = text || "";
+  }
+
+  function money(x){
+    const n = Number(x || 0);
+    return Number.isFinite(n) ? n.toString() : "0";
+  }
+
+  function qtyOf(id){
+    return cart.get(id) || 0;
+  }
+
+  function calcTotal(){
+    let t = 0;
+    for (const it of menuRows){
+      const q = qtyOf(it.id);
+      if (q > 0) t += Number(it.price || 0) * q;
+    }
+    $("#total").textContent = money(t);
+  }
+
+  function escapeHtml(s){
+    return String(s ?? "").replace(/[&<>"']/g, m => ({
+      '&':'&amp;',
+      '<':'&lt;',
+      '>':'&gt;',
+      '"':'&quot;',
+      "'":'&#39;'
+    }[m]));
+  }
+
+  function detectCategory(item){
+    return item.category || "other";
+  }
+
+  function openImage(src){
+    if (!src) return;
+    $("#imageOverlayImg").src = src;
+    $("#imageOverlay").classList.add("active");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeImage(){
+    $("#imageOverlay").classList.remove("active");
+    $("#imageOverlayImg").src = "";
+    document.body.style.overflow = "";
+  }
+
+  function renderCategoryTabs(){
+    const t = I18N[LANG] || I18N.fa;
+    const box = $("#categoryTabs");
+    if (!box) return;
+
+    const tabs = [
+      { key: "all", label: t.cat_all },
+      { key: "food", label: t.cat_food },
+      { key: "yogurt_salad", label: t.cat_yogurt_salad },
+      { key: "drinks", label: t.cat_drinks },
+      { key: "desserts", label: t.cat_desserts },
+      { key: "other", label: t.cat_other }
+    ];
+
+    box.innerHTML = tabs.map(tab => `
+      <button
+        type="button"
+        class="categoryTab ${ACTIVE_CATEGORY === tab.key ? "active" : ""}"
+        data-cat="${tab.key}"
+      >
+        ${tab.label}
+      </button>
+    `).join("");
+
+    box.querySelectorAll(".categoryTab").forEach(btn => {
+      btn.addEventListener("click", () => {
+        ACTIVE_CATEGORY = btn.getAttribute("data-cat");
+        renderCategoryTabs();
+        renderMenu();
+      });
+    });
+  }
+
+  function buildItemCard(it, t){
+    const stock = Number(it.stock ?? 0);
+    const q = qtyOf(it.id);
+    const disabledPlus = q >= stock ? "disabled" : "";
+
+    return `
+      <div class="item" data-id="${it.id}">
+        ${it.image
+          ? `<img src="${it.image}" alt="" class="menuItemImage" data-full-image="${it.image}">`
+          : `<div class="muted small" style="padding:10px 0">—</div>`
+        }
+
+        <div class="row">
+          <div>
+            <div><b>${escapeHtml(it.title)}</b></div>
+            <div class="muted small">
+              <span style="font-weight:700; font-size:18px;">${t.price}: ${money(it.price)}</span>
+              |
+              ${t.stock}: ${stock}
+            </div>
+          </div>
+          <span class="pill">${t.id}: ${it.id}</span>
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <div class="qtyBox">
+            <button class="minus" type="button">-</button>
+            <div class="qty">${q}</div>
+            <button class="plus" type="button" ${disabledPlus}>+</button>
+          </div>
+          <div class="muted small">${stock===0 ? t.out : ""}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderMenu(){
+    const t = I18N[LANG] || I18N.fa;
+    $("#menuCount").textContent = String(menuRows.length || 0);
+
+    const box = $("#menu");
+
+    if (!menuRows.length){
+      box.innerHTML = "";
+      $("#menuMsg").textContent = t.emptyMenu;
+      return;
+    }
+
+    $("#menuMsg").textContent = "";
+
+    let filteredRows = menuRows;
+    if (ACTIVE_CATEGORY !== "all") {
+      filteredRows = menuRows.filter(x => x.categoryKey === ACTIVE_CATEGORY);
+    }
+
+    if (!filteredRows.length) {
+      box.innerHTML = `<div class="muted">${t.emptyCat}</div>`;
+      return;
+    }
+
+    let sectionTitle = t.cat_all;
+    if (ACTIVE_CATEGORY === "food") sectionTitle = t.cat_food;
+    if (ACTIVE_CATEGORY === "yogurt_salad") sectionTitle = t.cat_yogurt_salad;
+    if (ACTIVE_CATEGORY === "drinks") sectionTitle = t.cat_drinks;
+    if (ACTIVE_CATEGORY === "desserts") sectionTitle = t.cat_desserts;
+    if (ACTIVE_CATEGORY === "other") sectionTitle = t.cat_other;
+
+    box.innerHTML = `
+      <div class="sectionTitle">${sectionTitle}</div>
+      <div class="menuGrid">
+        ${filteredRows.map(it => buildItemCard(it, t)).join("")}
+      </div>
+    `;
+
+    box.querySelectorAll(".item").forEach(card => {
+      const id = Number(card.getAttribute("data-id"));
+      const it = menuRows.find(x => x.id === id);
+      const stock = Number(it?.stock ?? 0);
+
+      const image = card.querySelector(".menuItemImage");
+      if (image) {
+        image.addEventListener("click", () => openImage(image.getAttribute("data-full-image")));
+      }
+
+      card.querySelector(".minus").addEventListener("click", () => {
+        const q = qtyOf(id);
+        if (q <= 0) return;
+        cart.set(id, q - 1);
+        renderMenu();
+        calcTotal();
+      });
+
+      card.querySelector(".plus").addEventListener("click", () => {
+        const q = qtyOf(id);
+        if (q >= stock) return;
+        cart.set(id, q + 1);
+        renderMenu();
+        calcTotal();
+      });
+    });
+  }
+
+  async function loadMenu(){
+    const t = I18N[LANG] || I18N.fa;
+    setMsg("");
+    $("#menuMsg").textContent = t.loading;
+
+    try{
+      const j = await apiJson("/api/menu");
+
+      menuRows = (j.rows || []).map(r => ({
+        id: Number(r.id),
+        title: r.title || r.name || "",
+        price: Number(r.price || 0),
+        image: r.image || "",
+        stock: Number(r.stock ?? 0),
+        category: r.category || "",
+        categoryKey: r.category || detectCategory(r)
+      }));
+
+      for (const it of menuRows){
+        const q = qtyOf(it.id);
+        if (q > it.stock) cart.set(it.id, it.stock);
+      }
+
+      renderCategoryTabs();
+      renderMenu();
+      calcTotal();
+    }catch(err){
+      $("#menuMsg").textContent = "";
+      setMsg(t.failedMenu(err.message), "err");
+    }
+  }
+
+  async function getCurrentLocation(){
+    const t = I18N[LANG] || I18N.fa;
+
+    if (!navigator.geolocation) {
+      setLocationMsg(t.locationFail, "err");
+      return;
+    }
+
+    setLocationMsg(t.locationLoading, "muted");
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        const link = `https://www.google.com/maps?q=${lat},${lng}`;
+        $("#locationText").value = link;
+        setLocationMsg(t.locationOk, "ok");
+      },
+      () => {
+        setLocationMsg(t.locationFail, "err");
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
+  }
+
+  document.querySelectorAll(".langBtn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      LANG = btn.getAttribute("data-lang");
+      setSavedLang(LANG);
+      applyLang();
+      showStep("stepInfo");
+    });
+  });
+
+  $("#btnBackToLang").addEventListener("click", () => {
+    showStep("stepLang");
+  });
+
+  $("#btnChangeLang").addEventListener("click", () => {
+    showStep("stepLang");
+  });
+
+  $("#btnEditInfo").addEventListener("click", () => {
+    showStep("stepInfo");
+  });
+
+  $("#btnGetLocation").addEventListener("click", getCurrentLocation);
+
+  $("#btnResetAll").addEventListener("click", () => {
+    localStorage.removeItem("takht_lang");
+    sessionStorage.removeItem("takht_last_order");
+    LANG = "fa";
+    ACTIVE_CATEGORY = "all";
+    customer = { name:"", phone:"", address:"", locationText:"", notes:"" };
+    cart.clear();
+    $("#name").value = "";
+    $("#phone").value = "";
+    $("#address").value = "";
+    $("#locationText").value = "";
+    $("#notes").value = "";
+    setMsg("");
+    setInfoMsg("");
+    setLocationMsg("");
+    applyLang();
+    showStep("stepLang");
+  });
+
+  $("#btnConfirmInfo").addEventListener("click", async () => {
+    const t = I18N[LANG] || I18N.fa;
+
+    const name = ($("#name").value || "").trim();
+    const phone = ($("#phone").value || "").trim();
+    const address = ($("#address").value || "").trim();
+    const locationText = ($("#locationText").value || "").trim();
+    const notes = ($("#notes").value || "").trim();
+
+    if (!name || !phone){
+      setInfoMsg(t.needNamePhone, "err");
+      return;
+    }
+
+    setInfoMsg("", "muted");
+    customer = { name, phone, address, locationText, notes };
+    showStep("stepOrder");
+    await loadMenu();
+  });
+
+  $("#btnRefresh").addEventListener("click", loadMenu);
+
+  $("#btnSubmit").addEventListener("click", async () => {
+    const t = I18N[LANG] || I18N.fa;
+    setMsg("");
+
+    const items = [];
+    for (const it of menuRows){
+      const q = qtyOf(it.id);
+      if (q > 0){
+        items.push({
+          id: it.id,
+          title: it.title,
+          price: it.price,
+          qty: q
+        });
+      }
+    }
+
+    if (!items.length){
+      setMsg(t.chooseItems, "err");
+      return;
+    }
+
+    const addressNow = ($("#address").value || customer.address || "").trim();
+    const locationNow = ($("#locationText").value || customer.locationText || "").trim();
+    const notesNow = ($("#notes").value || customer.notes || "").trim();
+
+    customer.address = addressNow;
+    customer.locationText = locationNow;
+    customer.notes = notesNow;
+
+    try{
+      setMsg(t.placing);
+
+      const payload = {
+        name: customer.name,
+        phone: customer.phone,
+        address: customer.address,
+        locationText: customer.locationText,
+        notes: customer.notes,
+        items
+      };
+
+      console.log("ORDER PAYLOAD =>", payload);
+
+      const j = await apiJson("/api/order", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      sessionStorage.setItem("takht_last_order", JSON.stringify({
+        orderId: j.orderId,
+        total: j.total,
+        name: customer.name,
+        phone: customer.phone,
+        address: customer.address,
+        locationText: customer.locationText,
+        notes: customer.notes
+      }));
+
+      location.href = "/thanks.html";
+    }catch(err){
+      setMsg(t.failedOrder(err.message), "err");
+    }
+  });
+
+  $("#imageOverlay").addEventListener("click", (e) => {
+    if (e.target.id === "imageOverlay" || e.target.id === "imageOverlayClose") {
+      closeImage();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeImage();
+  });
+
+  window.addEventListener("load", () => {
+    setTimeout(() => {
+      $("#splash").classList.add("hide");
+    }, 1800);
+  });
+
+  applyLang();
+  showStep("stepLang");
+</script>
+</body>
+</html>

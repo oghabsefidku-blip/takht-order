@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>شكراً لاختياركم لنا</title>
+  <style>
+    body{
+      font-family:tahoma,Arial,sans-serif;
+      margin:0;
+      background:#f8fafc;
+      color:#1e293b;
+    }
+
+    .wrap{
+      max-width:1000px;
+      margin:24px auto;
+      padding:0 16px;
+    }
+
+    .card{
+      background:#ffffff;
+      border:1px solid #dbe4f0;
+      border-radius:18px;
+      padding:18px;
+      margin:14px 0;
+      box-shadow:0 8px 24px rgba(15,23,42,0.06);
+    }
+
+    .title{
+      font-size:34px;
+      font-weight:800;
+      color:#8a5a1d;
+      margin-bottom:8px;
+    }
+
+    .sub{
+      color:#64748b;
+      font-size:16px;
+    }
+
+    .row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .infoBox{
+      font-size:20px;
+      font-weight:700;
+      color:#0f172a;
+    }
+
+    .sectionTitle{
+      font-size:32px;
+      font-weight:800;
+      color:#8a5a1d;
+      margin-bottom:6px;
+    }
+
+    .items{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      margin-top:12px;
+    }
+
+    .item{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      border-radius:14px;
+      padding:12px;
+    }
+
+    .item img{
+      width:90px;
+      height:90px;
+      object-fit:cover;
+      border-radius:12px;
+      background:#e5e7eb;
+      flex-shrink:0;
+    }
+
+    .itemText{
+      flex:1;
+    }
+
+    .itemName{
+      font-size:24px;
+      font-weight:800;
+      color:#0f172a;
+      margin-bottom:6px;
+    }
+
+    .itemMeta{
+      font-size:20px;
+      color:#334155;
+      font-weight:700;
+    }
+
+    .actions{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      border:none;
+      border-radius:12px;
+      padding:12px 20px;
+      cursor:pointer;
+      font-size:16px;
+      font-weight:700;
+    }
+
+    .btnPrint{
+      background:#3b82f6;
+      color:#ffffff;
+    }
+
+    .btnNew{
+      background:#22c55e;
+      color:#ffffff;
+    }
+
+    .empty{
+      color:#64748b;
+      font-size:18px;
+      padding:12px 0;
+    }
+
+    @media (max-width:700px){
+      .title{font-size:28px}
+      .sectionTitle{font-size:26px}
+      .itemName{font-size:20px}
+      .itemMeta{font-size:17px}
+      .infoBox{font-size:18px}
+    }
+
+    @media print{
+      .actions{
+        display:none;
+      }
+      body{
+        background:#ffffff;
+      }
+      .card{
+        box-shadow:none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="card">
+      <div class="title">✨ شكراً لاختياركم لنا</div>
+      <div class="sub">تم تسجيل طلبكم بنجاح، تفاصيل الشراء:</div>
+    </div>
+
+    <div class="card">
+      <div class="row" style="margin-bottom:10px;">
+        <div class="infoBox" id="orderIdBox">#-</div>
+      </div>
+
+      <div class="row" style="margin-bottom:10px;">
+        <div class="infoBox" id="totalBox">الإجمالي: 0</div>
+        <div class="infoBox" id="customerBox">العميل: -</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sectionTitle">أصناف الطلب</div>
+      <div id="countBox" class="sub"></div>
+      <div id="items" class="items"></div>
+    </div>
+
+    <div class="card">
+      <div class="actions">
+        <button class="btn btnPrint" onclick="window.print()">طباعة</button>
+        <button class="btn btnNew" onclick="goNewOrder()">طلب جديد</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function money(x){
+      const n = Number(x || 0);
+      return Number.isFinite(n) ? n.toString() : "0";
+    }
+
+    function escapeHtml(s){
+      return String(s ?? "").replace(/[&<>"']/g, m => ({
+        '&':'&amp;',
+        '<':'&lt;',
+        '>':'&gt;',
+        '"':'&quot;',
+        "'":'&#39;'
+      }[m]));
+    }
+
+    function goNewOrder(){
+      sessionStorage.removeItem("takht_last_order");
+      location.href = "/order.html";
+    }
+
+    const raw = sessionStorage.getItem("takht_last_order");
+    let order = null;
+
+    try{
+      order = raw ? JSON.parse(raw) : null;
+    }catch(e){
+      order = null;
+    }
+
+    const orderIdBox = document.getElementById("orderIdBox");
+    const totalBox = document.getElementById("totalBox");
+    const customerBox = document.getElementById("customerBox");
+    const countBox = document.getElementById("countBox");
+    const itemsBox = document.getElementById("items");
+
+    if (!order) {
+      orderIdBox.textContent = "#-";
+      totalBox.textContent = "الإجمالي: 0";
+      customerBox.textContent = "العميل: -";
+      countBox.textContent = "0 صنف";
+      itemsBox.innerHTML = '<div class="empty">لا توجد بيانات طلب محفوظة.</div>';
+    } else {
+      orderIdBox.textContent = "#" + (order.orderId ?? "-");
+      totalBox.textContent = "الإجمالي: " + money(order.total);
+      customerBox.textContent = "العميل: " + (order.name || "-") + " - " + (order.phone || "-");
+
+      const items = Array.isArray(order.items) ? order.items : [];
+      countBox.textContent = items.length + " صنف";
+
+      if (!items.length) {
+        itemsBox.innerHTML = '<div class="empty">لا توجد أصناف داخل الطلب.</div>';
+      } else {
+        itemsBox.innerHTML = items.map(item => `
+          <div class="item">
+            ${item.image ? `<img src="${item.image}" alt="">` : `<img src="" alt="" style="display:none;">`}
+            <div class="itemText">
+              <div class="itemName">${escapeHtml(item.title || item.name || "")}</div>
+              <div class="itemMeta">
+                الكمية: ${money(item.qty)} |
+                السعر: ${money(item.price)}
+              </div>
+            </div>
+          </div>
+        `).join("");
+      }
+    }
+  </script>
+</body>
+</html>

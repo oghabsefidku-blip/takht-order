@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>مدیریت منو</title>
+  <style>
+    body{
+      font-family:tahoma,Arial;
+      margin:0;
+      background:#0f172a;
+      color:#e5eefc;
+    }
+
+    .wrap{
+      max-width:1280px;
+      margin:24px auto;
+      padding:0 16px;
+    }
+
+    .card{
+      background:#111c34;
+      border:1px solid #223055;
+      border-radius:16px;
+      padding:16px;
+      margin:14px 0;
+    }
+
+    h1,h2{
+      margin:8px 0 12px;
+      color:#ffffff;
+    }
+
+    .muted{
+      color:#9fb0d5;
+    }
+
+    .grid2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    @media (max-width:800px){
+      .grid2{grid-template-columns:1fr}
+    }
+
+    input, select, button{
+      font-family:inherit;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="file"],
+    select{
+      width:100%;
+      box-sizing:border-box;
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid #2a3a66;
+      background:#0c1426;
+      color:#e8eefc;
+      font-size:14px;
+    }
+
+    input[type="file"]{
+      padding:8px;
+    }
+
+    button{
+      padding:10px 14px;
+      border-radius:10px;
+      border:0;
+      cursor:pointer;
+      font-weight:bold;
+    }
+
+    .btnGreen{
+      background:#22c55e;
+      color:#06210f;
+    }
+
+    .btnBlue{
+      background:#3b82f6;
+      color:#fff;
+    }
+
+    .btnRed{
+      background:#ef4444;
+      color:#fff;
+    }
+
+    .btnGray{
+      background:#475569;
+      color:#fff;
+    }
+
+    .btnOrange{
+      background:#f59e0b;
+      color:#111827;
+    }
+
+    .btnPurple{
+      background:#8b5cf6;
+      color:#fff;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:10px;
+    }
+
+    th, td{
+      border-bottom:1px solid #24314f;
+      padding:10px 8px;
+      text-align:right;
+      vertical-align:top;
+      font-size:14px;
+    }
+
+    th{
+      color:#cbd5e1;
+      background:#0f172a;
+      position:sticky;
+      top:0;
+      z-index:2;
+    }
+
+    .thumb{
+      width:72px;
+      height:72px;
+      object-fit:cover;
+      border-radius:10px;
+      border:1px solid #334155;
+      background:#0b1220;
+      display:block;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .msg{
+      margin-top:10px;
+      font-size:13px;
+    }
+
+    .ok{ color:#86efac; }
+    .err{ color:#fca5a5; }
+
+    .actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .previewWrap{
+      margin-top:10px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .previewImg{
+      width:120px;
+      height:120px;
+      object-fit:cover;
+      border-radius:12px;
+      border:1px solid #334155;
+      background:#0b1220;
+      display:none;
+    }
+
+    .smallText{
+      font-size:12px;
+      color:#94a3b8;
+    }
+
+    .tableResponsive{
+      overflow:auto;
+      max-height:70vh;
+    }
+
+    .inlineInput{
+      min-width:130px;
+    }
+
+    .inlineName{
+      min-width:220px;
+    }
+
+    .inlinePrice{
+      min-width:90px;
+    }
+
+    .inlineStock{
+      min-width:90px;
+    }
+
+    .inlineCategory{
+      min-width:150px;
+    }
+
+    .inlineImage{
+      min-width:220px;
+    }
+
+    .cellStack{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .miniPreview{
+      width:64px;
+      height:64px;
+      object-fit:cover;
+      border-radius:10px;
+      border:1px solid #334155;
+      background:#0b1220;
+    }
+
+    .topSticky{
+      position:sticky;
+      top:0;
+      z-index:3;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>مدیریت منو</h1>
+      <div class="muted">
+        افزودن آیتم جدید از بالا انجام می‌شود، اما تمام ویرایش‌های آیتم‌های موجود از داخل خود لیست انجام می‌شود.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>افزودن آیتم جدید</h2>
+
+      <div class="grid2">
+        <div>
+          <label>نام غذا / آیتم</label>
+          <input id="new_name" type="text" placeholder="مثلاً چلوکباب" />
+        </div>
+
+        <div>
+          <label>قیمت</label>
+          <input id="new_price" type="number" step="0.001" placeholder="مثلاً 2.5" />
+        </div>
+
+        <div>
+          <label>موجودی (Stock)</label>
+          <input id="new_stock" type="number" placeholder="مثلاً 20" />
+        </div>
+
+        <div>
+          <label>دسته‌بندی</label>
+          <select id="new_category">
+            <option value="food">غذاها</option>
+            <option value="yogurt_salad">ماست و سالاد</option>
+            <option value="drinks">نوشیدنی‌ها</option>
+            <option value="desserts">شیرینی‌ها</option>
+            <option value="other">سایر</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <label>آپلود عکس</label>
+        <input id="new_imageFile" type="file" accept="image/*" />
+        <div class="smallText">می‌توانی عکس را مستقیم انتخاب کنی یا پایین آدرس عکس بدهی.</div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <label>یا آدرس عکس</label>
+        <input id="new_image" type="text" placeholder="مثلاً /uploads/food.jpg یا https://..." />
+      </div>
+
+      <div class="previewWrap">
+        <img id="new_previewImg" class="previewImg" alt="preview" />
+        <button id="btnRemoveNewImage" class="btnRed" type="button" style="display:none;">حذف عکس</button>
+      </div>
+
+      <div class="row" style="margin-top:14px;">
+        <button id="btnAddItem" class="btnGreen" type="button">افزودن به منو</button>
+      </div>
+
+      <div id="formMsg" class="msg"></div>
+    </div>
+
+    <div class="card topSticky">
+      <h2>لیست منو</h2>
+      <div class="muted">در همین جدول می‌توانی نام، قیمت، موجودی، دسته و عکس را مستقیم تغییر بدهی و همان‌جا ذخیره کنی.</div>
+      <div id="tableMsg" class="msg"></div>
+    </div>
+
+    <div class="card">
+      <div id="tableWrap" class="tableResponsive"></div>
+    </div>
+  </div>
+
+<script>
+  const $ = s => document.querySelector(s);
+
+  let rows = [];
+  let newUploadedImageData = "";
+
+  function setFormMsg(text, type=""){
+    const el = $("#formMsg");
+    el.className = "msg " + type;
+    el.textContent = text || "";
+  }
+
+  function setTableMsg(text, type=""){
+    const el = $("#tableMsg");
+    el.className = "msg " + type;
+    el.textContent = text || "";
+  }
+
+  function categoryLabel(value){
+    const map = {
+      food: "غذاها",
+      yogurt_salad: "ماست و سالاد",
+      drinks: "نوشیدنی‌ها",
+      desserts: "شیرینی‌ها",
+      other: "سایر"
+    };
+    return map[value] || "سایر";
+  }
+
+  async function apiJson(url, options){
+    const res = await fetch(url, options);
+    const txt = await res.text();
+
+    let j = null;
+    try {
+      j = JSON.parse(txt);
+    } catch(e) {
+      j = { ok:false, error:"Bad JSON from server", raw: txt };
+    }
+
+    if (!res.ok || !j.ok) {
+      throw new Error(j.error || ("HTTP " + res.status));
+    }
+
+    return j;
+  }
+
+  function showNewPreview(src){
+    const img = $("#new_previewImg");
+    const btn = $("#btnRemoveNewImage");
+
+    if (src) {
+      img.src = src;
+      img.style.display = "block";
+      btn.style.display = "inline-block";
+    } else {
+      img.src = "";
+      img.style.display = "none";
+      btn.style.display = "none";
+    }
+  }
+
+  function clearNewForm(){
+    newUploadedImageData = "";
+    $("#new_name").value = "";
+    $("#new_price").value = "";
+    $("#new_stock").value = "";
+    $("#new_category").value = "food";
+    $("#new_image").value = "";
+    $("#new_imageFile").value = "";
+    showNewPreview("");
+    setFormMsg("");
+  }
+
+  function getNewImageValue(){
+    const urlValue = ($("#new_image").value || "").trim();
+    if (newUploadedImageData) return newUploadedImageData;
+    if (urlValue) return urlValue;
+    return "";
+  }
+
+  async function loadMenu(){
+    try{
+      const j = await apiJson("/api/menu");
+      rows = (j.rows || []).map(item => ({
+        id: Number(item.id),
+        title: item.title || item.name || "",
+        name: item.name || item.title || "",
+        price: Number(item.price || 0),
+        stock: Number(item.stock || 0),
+        category: item.category || "other",
+        image: item.image || "",
+        sort_order: Number(item.sort_order || 0)
+      }));
+      renderTable();
+    }catch(err){
+      $("#tableWrap").innerHTML = `<div class="err">خطا در دریافت منو: ${err.message}</div>`;
+    }
+  }
+
+  function renderTable(){
+    if (!rows.length){
+      $("#tableWrap").innerHTML = `<div class="muted" style="margin-top:10px;">هنوز آیتمی در منو وجود ندارد.</div>`;
+      return;
+    }
+
+    $("#tableWrap").innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>عکس فعلی</th>
+            <th>نام</th>
+            <th>قیمت</th>
+            <th>موجودی</th>
+            <th>دسته فعلی</th>
+            <th>ویرایش دسته</th>
+            <th>آدرس عکس</th>
+            <th>پیش‌نمایش جدید</th>
+            <th>عملیات</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(item => `
+            <tr>
+              <td>
+                ${item.image ? `<img class="thumb" src="${item.image}" alt="">` : `—`}
+              </td>
+
+              <td>
+                <input class="inlineInput inlineName" id="name_${item.id}" type="text" value="${escapeHtmlAttr(item.title)}" />
+              </td>
+
+              <td>
+                <input class="inlineInput inlinePrice" id="price_${item.id}" type="number" step="0.001" value="${item.price}" />
+              </td>
+
+              <td>
+                <input class="inlineInput inlineStock" id="stock_${item.id}" type="number" value="${item.stock}" />
+              </td>
+
+              <td>${categoryLabel(item.category)}</td>
+
+              <td>
+                <select class="inlineInput inlineCategory" id="category_${item.id}">
+                  <option value="food" ${item.category === "food" ? "selected" : ""}>غذاها</option>
+                  <option value="yogurt_salad" ${item.category === "yogurt_salad" ? "selected" : ""}>ماست و سالاد</option>
+                  <option value="drinks" ${item.category === "drinks" ? "selected" : ""}>نوشیدنی‌ها</option>
+                  <option value="desserts" ${item.category === "desserts" ? "selected" : ""}>شیرینی‌ها</option>
+                  <option value="other" ${item.category === "other" ? "selected" : ""}>سایر</option>
+                </select>
+              </td>
+
+              <td>
+                <div class="cellStack">
+                  <input class="inlineInput inlineImage" id="image_${item.id}" type="text" value="${escapeHtmlAttr(item.image)}" placeholder="/uploads/... یا https://..." />
+                  <input id="file_${item.id}" type="file" accept="image/*" onchange="handleInlineFile(${item.id}, event)" />
+                </div>
+              </td>
+
+              <td>
+                <img
+                  id="preview_${item.id}"
+                  class="miniPreview"
+                  src="${item.image ? item.image : ''}"
+                  style="${item.image ? '' : 'display:none;'}"
+                  alt="preview"
+                />
+              </td>
+
+              <td>
+                <div class="actions">
+                  <button class="btnGreen" onclick="saveRow(${item.id})">ذخیره</button>
+                  <button class="btnBlue" onclick="previewFromUrl(${item.id})">پیش‌نمایش</button>
+                  <button class="btnRed" onclick="deleteItem(${item.id})">حذف</button>
+                </div>
+              </td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    `;
+  }
+
+  function escapeHtmlAttr(value){
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
+  window.previewFromUrl = function(id){
+    const input = document.getElementById(`image_${id}`);
+    const img = document.getElementById(`preview_${id}`);
+    const value = (input.value || "").trim();
+
+    if (!value) {
+      img.src = "";
+      img.style.display = "none";
+      return;
+    }
+
+    img.src = value;
+    img.style.display = "block";
+  };
+
+  window.handleInlineFile = function(id, event){
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setTableMsg("فایل انتخابی عکس نیست", "err");
+      event.target.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(evt){
+      const result = evt.target.result || "";
+      const input = document.getElementById(`image_${id}`);
+      const img = document.getElementById(`preview_${id}`);
+
+      input.value = result;
+      img.src = result;
+      img.style.display = "block";
+      setTableMsg("عکس ردیف انتخاب شد", "ok");
+    };
+
+    reader.onerror = function(){
+      setTableMsg("خطا در خواندن فایل عکس", "err");
+    };
+
+    reader.readAsDataURL(file);
+  };
+
+  window.saveRow = async function(id){
+    const current = rows.find(x => Number(x.id) === Number(id));
+    if (!current) return;
+
+    const name = (document.getElementById(`name_${id}`).value || "").trim();
+    const price = (document.getElementById(`price_${id}`).value || "").trim();
+    const stock = (document.getElementById(`stock_${id}`).value || "").trim();
+    const category = (document.getElementById(`category_${id}`).value || "other").trim();
+    const image = (document.getElementById(`image_${id}`).value || "").trim();
+
+    if (!name || price === "") {
+      setTableMsg("نام و قیمت هر ردیف لازم است", "err");
+      return;
+    }
+
+    try{
+      await apiJson(`/api/menu/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          price: Number(price),
+          stock: Number(stock || 0),
+          category,
+          image,
+          sort_order: current.sort_order || 0
+        })
+      });
+
+      setTableMsg("ردیف با موفقیت ذخیره شد", "ok");
+      await loadMenu();
+    }catch(err){
+      setTableMsg("خطا در ذخیره ردیف: " + err.message, "err");
+    }
+  };
+
+  window.deleteItem = async function(id){
+    if (!confirm("این آیتم حذف شود؟")) return;
+
+    try{
+      await apiJson(`/api/menu/${id}`, {
+        method: "DELETE"
+      });
+
+      setTableMsg("آیتم حذف شد", "ok");
+      await loadMenu();
+    }catch(err){
+      setTableMsg("خطا در حذف: " + err.message, "err");
+    }
+  };
+
+  $("#new_imageFile").addEventListener("change", (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setFormMsg("فایل انتخابی عکس نیست", "err");
+      e.target.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(evt){
+      newUploadedImageData = evt.target.result || "";
+      $("#new_image").value = "";
+      showNewPreview(newUploadedImageData);
+      setFormMsg("عکس جدید انتخاب شد", "ok");
+    };
+
+    reader.onerror = function(){
+      setFormMsg("خطا در خواندن فایل عکس", "err");
+    };
+
+    reader.readAsDataURL(file);
+  });
+
+  $("#new_image").addEventListener("input", () => {
+    const val = ($("#new_image").value || "").trim();
+    if (val) {
+      newUploadedImageData = "";
+      $("#new_imageFile").value = "";
+      showNewPreview(val);
+    } else if (!newUploadedImageData) {
+      showNewPreview("");
+    }
+  });
+
+  $("#btnRemoveNewImage").addEventListener("click", () => {
+    newUploadedImageData = "";
+    $("#new_image").value = "";
+    $("#new_imageFile").value = "";
+    showNewPreview("");
+    setFormMsg("عکس حذف شد", "ok");
+  });
+
+  $("#btnAddItem").addEventListener("click", async () => {
+    const name = ($("#new_name").value || "").trim();
+    const price = ($("#new_price").value || "").trim();
+    const stock = ($("#new_stock").value || "").trim();
+    const category = ($("#new_category").value || "other").trim();
+    const image = getNewImageValue();
+
+    if (!name || price === "") {
+      setFormMsg("نام و قیمت لازم است", "err");
+      return;
+    }
+
+    try{
+      await apiJson("/api/menu", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          price: Number(price),
+          stock: Number(stock || 0),
+          category,
+          image
+        })
+      });
+
+      setFormMsg("آیتم جدید اضافه شد", "ok");
+      clearNewForm();
+      await loadMenu();
+    }catch(err){
+      setFormMsg("خطا در افزودن آیتم: " + err.message, "err");
+    }
+  });
+
+  clearNewForm();
+  loadMenu();
+</script>
+</body>
+</html>

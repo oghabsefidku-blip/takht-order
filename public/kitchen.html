@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>صفحه آشپزخانه</title>
+  <style>
+    body{
+      font-family:tahoma,Arial;
+      margin:0;
+      background:#0f172a;
+      color:#e5eefc;
+    }
+
+    .wrap{
+      max-width:1200px;
+      margin:24px auto;
+      padding:0 16px;
+    }
+
+    .card{
+      background:#111c34;
+      border:1px solid #223055;
+      border-radius:16px;
+      padding:16px;
+      margin:14px 0;
+      box-shadow:0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    h1{
+      margin:0 0 8px 0;
+      color:#fff;
+      font-size:34px;
+    }
+
+    .muted{
+      color:#9fb0d5;
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    button, select{
+      border:none;
+      border-radius:10px;
+      padding:10px 14px;
+      cursor:pointer;
+      font-family:inherit;
+      font-weight:bold;
+    }
+
+    .langSelect{
+      background:#1e293b;
+      color:#fff;
+      border:1px solid #334155;
+    }
+
+    .btnBlue{
+      background:#3b82f6;
+      color:#fff;
+    }
+
+    .btnGreen{
+      background:#22c55e;
+      color:#06210f;
+    }
+
+    .btnGray{
+      background:#475569;
+      color:#fff;
+    }
+
+    .btnRed{
+      background:#ef4444;
+      color:#fff;
+    }
+
+    .stats{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    .pill{
+      background:#0f172a;
+      border:1px solid #223055;
+      color:#cbd5e1;
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:13px;
+      font-weight:bold;
+    }
+
+    .orders{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(360px,1fr));
+      gap:14px;
+    }
+
+    .orderCard{
+      background:#0c1426;
+      border:1px solid #2a3a66;
+      border-radius:16px;
+      padding:14px;
+    }
+
+    .orderHeader{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+
+    .orderId{
+      font-size:22px;
+      font-weight:800;
+      color:#fff;
+    }
+
+    .orderTime{
+      color:#a5b4d6;
+      font-size:12px;
+      margin-top:4px;
+    }
+
+    .status{
+      display:inline-block;
+      padding:5px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:bold;
+    }
+
+    .status-new{
+      background:#7f1d1d;
+      color:#fecaca;
+      border:1px solid #b91c1c;
+    }
+
+    .status-preparing{
+      background:#78350f;
+      color:#fde68a;
+      border:1px solid #d97706;
+    }
+
+    .status-done{
+      background:#14532d;
+      color:#bbf7d0;
+      border:1px solid #16a34a;
+    }
+
+    .customer{
+      background:#111827;
+      border:1px solid #24324d;
+      border-radius:12px;
+      padding:10px;
+      margin-bottom:10px;
+      color:#dbeafe;
+      font-size:14px;
+      line-height:1.9;
+    }
+
+    .infoBlock{
+      background:#101a30;
+      border:1px solid #24324d;
+      border-radius:12px;
+      padding:10px;
+      margin-bottom:10px;
+      color:#dbeafe;
+      font-size:13px;
+      line-height:1.9;
+      word-break:break-word;
+    }
+
+    .infoLabel{
+      color:#93c5fd;
+      font-weight:800;
+      margin-bottom:4px;
+    }
+
+    .items{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .item{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      background:#111827;
+      border:1px solid #24324d;
+      border-radius:12px;
+      padding:8px;
+    }
+
+    .item img{
+      width:64px;
+      height:64px;
+      object-fit:cover;
+      border-radius:10px;
+      background:#1f2937;
+      flex-shrink:0;
+    }
+
+    .itemName{
+      font-weight:800;
+      color:#fff;
+      margin-bottom:4px;
+    }
+
+    .itemMeta{
+      color:#cbd5e1;
+      font-size:13px;
+    }
+
+    .orderFooter{
+      margin-top:12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .total{
+      font-size:18px;
+      font-weight:800;
+      color:#fff;
+    }
+
+    .msg{
+      margin-top:10px;
+      font-size:13px;
+    }
+
+    .ok{ color:#86efac; }
+    .err{ color:#fca5a5; }
+
+    .empty{
+      background:#111c34;
+      border:1px dashed #31456f;
+      border-radius:16px;
+      padding:24px;
+      text-align:center;
+      color:#9fb0d5;
+      font-size:18px;
+    }
+
+    a{
+      color:#93c5fd;
+      text-decoration:none;
+      word-break:break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="card">
+      <h1 id="pageTitle">صفحه آشپزخانه</h1>
+      <div class="muted" id="pageDesc">سفارش‌ها هر 5 ثانیه بروزرسانی می‌شوند.</div>
+
+      <div class="actions">
+        <button class="btnBlue" id="btnRefresh" type="button">رفرش</button>
+        <button class="btnGreen" id="btnSound" type="button">صدای اعلان روشن</button>
+
+        <select id="langSelect" class="langSelect">
+          <option value="fa">فارسی</option>
+          <option value="ar">العربية</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+
+      <div class="stats">
+        <span class="pill" id="countAll">همه: 0</span>
+        <span class="pill" id="countNew">جدید: 0</span>
+        <span class="pill" id="countPreparing">در حال آماده‌سازی: 0</span>
+        <span class="pill" id="countDone">آماده: 0</span>
+      </div>
+
+      <div id="msg" class="msg"></div>
+    </div>
+
+    <div id="ordersBox" class="orders"></div>
+  </div>
+
+  <script>
+    const ordersBox = document.getElementById("ordersBox");
+    const msgBox = document.getElementById("msg");
+
+    let lastMaxId = 0;
+    let soundOn = true;
+    let audioCtx = null;
+    let currentLang = "fa";
+
+    const i18n = {
+      fa: {
+        dir: "rtl",
+        title: "صفحه آشپزخانه",
+        desc: "سفارش‌ها هر 5 ثانیه بروزرسانی می‌شوند.",
+        refresh: "رفرش",
+        soundOn: "صدای اعلان روشن",
+        soundOff: "صدای اعلان خاموش",
+        all: "همه",
+        new: "جدید",
+        preparing: "در حال آماده‌سازی",
+        done: "آماده",
+        noOrders: "سفارشی وجود ندارد.",
+        order: "سفارش",
+        time: "زمان",
+        customer: "مشتری",
+        phone: "تلفن",
+        address: "آدرس",
+        location: "لوکیشن",
+        notes: "ملاحظات / اقتراحات",
+        quantity: "تعداد",
+        price: "قیمت",
+        rowTotal: "جمع",
+        total: "مجموع",
+        statusNew: "جدید",
+        statusPreparing: "در حال آماده‌سازی",
+        statusDone: "آماده",
+        delete: "حذف",
+        confirmDelete: "این سفارش حذف شود؟",
+        deleteOk: "سفارش حذف شد.",
+        deleteErr: "خطا در حذف سفارش",
+        statusErr: "خطا در تغییر وضعیت سفارش",
+        soundEnabledMsg: "صدای اعلان فعال شد.",
+        soundDisabledMsg: "صدای اعلان غیرفعال شد.",
+        updatedAt: "آخرین بروزرسانی",
+        loadErr: "خطا در دریافت سفارش‌ها"
+      },
+      ar: {
+        dir: "rtl",
+        title: "صفحة المطبخ",
+        desc: "يتم تحديث الطلبات كل 5 ثوانٍ.",
+        refresh: "تحديث",
+        soundOn: "صوت التنبيه يعمل",
+        soundOff: "صوت التنبيه متوقف",
+        all: "الكل",
+        new: "جديد",
+        preparing: "قيد التحضير",
+        done: "جاهز",
+        noOrders: "لا توجد طلبات.",
+        order: "طلب",
+        time: "الوقت",
+        customer: "العميل",
+        phone: "الهاتف",
+        address: "العنوان",
+        location: "الموقع",
+        notes: "ملاحظات / اقتراحات",
+        quantity: "الكمية",
+        price: "السعر",
+        rowTotal: "المجموع",
+        total: "الإجمالي",
+        statusNew: "جديد",
+        statusPreparing: "قيد التحضير",
+        statusDone: "جاهز",
+        delete: "حذف",
+        confirmDelete: "هل تريد حذف هذا الطلب؟",
+        deleteOk: "تم حذف الطلب.",
+        deleteErr: "حدث خطأ أثناء حذف الطلب",
+        statusErr: "حدث خطأ أثناء تغيير حالة الطلب",
+        soundEnabledMsg: "تم تفعيل صوت التنبيه.",
+        soundDisabledMsg: "تم إيقاف صوت التنبيه.",
+        updatedAt: "آخر تحديث",
+        loadErr: "خطأ في جلب الطلبات"
+      },
+      en: {
+        dir: "ltr",
+        title: "Kitchen Page",
+        desc: "Orders refresh every 5 seconds.",
+        refresh: "Refresh",
+        soundOn: "Sound On",
+        soundOff: "Sound Off",
+        all: "All",
+        new: "New",
+        preparing: "Preparing",
+        done: "Ready",
+        noOrders: "No orders found.",
+        order: "Order",
+        time: "Time",
+        customer: "Customer",
+        phone: "Phone",
+        address: "Address",
+        location: "Location",
+        notes: "Notes / Suggestions",
+        quantity: "Qty",
+        price: "Price",
+        rowTotal: "Total",
+        total: "Grand Total",
+        statusNew: "New",
+        statusPreparing: "Preparing",
+        statusDone: "Ready",
+        delete: "Delete",
+        confirmDelete: "Delete this order?",
+        deleteOk: "Order deleted.",
+        deleteErr: "Error deleting order",
+        statusErr: "Error changing order status",
+        soundEnabledMsg: "Notification sound enabled.",
+        soundDisabledMsg: "Notification sound disabled.",
+        updatedAt: "Last update",
+        loadErr: "Error loading orders"
+      }
+    };
+
+    function t(key){
+      return (i18n[currentLang] && i18n[currentLang][key]) || key;
+    }
+
+    function applyLanguage(){
+      document.documentElement.lang = currentLang;
+      document.documentElement.dir = i18n[currentLang].dir;
+
+      document.getElementById("pageTitle").textContent = t("title");
+      document.getElementById("pageDesc").textContent = t("desc");
+      document.getElementById("btnRefresh").textContent = t("refresh");
+      document.getElementById("btnSound").textContent = soundOn ? t("soundOn") : t("soundOff");
+
+      if (window.lastRows) {
+        updateStats(window.lastRows);
+        renderOrders(window.lastRows);
+      }
+    }
+
+    function setMsg(text, type=""){
+      msgBox.className = "msg " + type;
+      msgBox.textContent = text || "";
+    }
+
+    function money(x){
+      const n = Number(x || 0);
+      return Number.isFinite(n) ? n.toString() : "0";
+    }
+
+    function escapeHtml(s){
+      return String(s ?? "").replace(/[&<>"']/g, m => ({
+        '&':'&amp;',
+        '<':'&lt;',
+        '>':'&gt;',
+        '"':'&quot;',
+        "'":'&#39;'
+      }[m]));
+    }
+
+    function formatTime(value){
+      if (!value) return "-";
+      const d = new Date(value);
+      if (isNaN(d.getTime())) return String(value);
+
+      if (currentLang === "fa") return d.toLocaleString("fa-IR");
+      if (currentLang === "ar") return d.toLocaleString("ar-KW");
+      return d.toLocaleString("en-US");
+    }
+
+    function statusLabel(status){
+      if (status === "done") return t("statusDone");
+      if (status === "preparing") return t("statusPreparing");
+      return t("statusNew");
+    }
+
+    function statusClass(status){
+      if (status === "done") return "status-done";
+      if (status === "preparing") return "status-preparing";
+      return "status-new";
+    }
+
+    async function apiJson(url, options){
+      const res = await fetch(url, {
+        cache: "no-store",
+        ...options
+      });
+
+      const txt = await res.text();
+
+      let data = null;
+      try{
+        data = JSON.parse(txt);
+      }catch(e){
+        data = { ok:false, error:"Bad JSON from server", raw: txt };
+      }
+
+      if (!res.ok || !data.ok) {
+        throw new Error(data.error || ("HTTP " + res.status));
+      }
+
+      return data;
+    }
+
+    function beep(){
+      if (!soundOn) return;
+
+      try{
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = "sine";
+        osc.frequency.value = 880;
+        gain.gain.value = 0.03;
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        setTimeout(() => osc.stop(), 180);
+      }catch(e){}
+    }
+
+    async function changeStatus(id, status){
+      try{
+        await apiJson(`/api/orders/${id}/status`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status })
+        });
+
+        await loadOrders();
+      }catch(err){
+        setMsg(t("statusErr"), "err");
+      }
+    }
+
+    async function deleteOrder(id){
+      const ok = confirm(t("confirmDelete"));
+      if (!ok) return;
+
+      try{
+        await apiJson(`/api/orders/${id}`, {
+          method: "DELETE"
+        });
+
+        setMsg(t("deleteOk"), "ok");
+        await loadOrders();
+      }catch(err){
+        setMsg(t("deleteErr"), "err");
+      }
+    }
+
+    function updateStats(rows){
+      document.getElementById("countAll").textContent = `${t("all")}: ${rows.length}`;
+      document.getElementById("countNew").textContent = `${t("new")}: ${rows.filter(x => (x.status || "new") === "new").length}`;
+      document.getElementById("countPreparing").textContent = `${t("preparing")}: ${rows.filter(x => x.status === "preparing").length}`;
+      document.getElementById("countDone").textContent = `${t("done")}: ${rows.filter(x => x.status === "done").length}`;
+    }
+
+    function renderOrders(rows){
+      if (!rows.length) {
+        ordersBox.innerHTML = `<div class="empty">${t("noOrders")}</div>`;
+        return;
+      }
+
+      ordersBox.innerHTML = rows.map(order => {
+        const items = Array.isArray(order.items) ? order.items : [];
+
+        return `
+          <div class="orderCard">
+            <div class="orderHeader">
+              <div>
+                <div class="orderId">${t("order")} #${order.orderId || order.id}</div>
+                <div class="orderTime">${t("time")}: ${formatTime(order.createdAt || order.data)}</div>
+              </div>
+              <span class="status ${statusClass(order.status || "new")}">
+                ${statusLabel(order.status || "new")}
+              </span>
+            </div>
+
+            <div class="customer">
+              ${t("customer")}: ${escapeHtml(order.customerName || order.customer_name || "-")}<br>
+              ${t("phone")}: ${escapeHtml(order.customerPhone || order.customer_phone || "-")}
+            </div>
+
+            <div class="infoBlock">
+              <div class="infoLabel">${t("address")}</div>
+              <div>${escapeHtml(order.address || order.tableOrAddress || order.customer_address || "-")}</div>
+            </div>
+
+            <div class="infoBlock">
+              <div class="infoLabel">${t("location")}</div>
+              <div>
+                ${(order.locationText || order.customer_location)
+                  ? `<a href="${escapeHtml(order.locationText || order.customer_location)}" target="_blank">${escapeHtml(order.locationText || order.customer_location)}</a>`
+                  : "-"}
+              </div>
+            </div>
+
+            <div class="infoBlock">
+              <div class="infoLabel">${t("notes")}</div>
+              <div>${escapeHtml(order.notes || "-")}</div>
+            </div>
+
+            <div class="items">
+              ${items.map(item => `
+                <div class="item">
+                  ${item.image ? `<img src="${item.image}" alt="">` : `<div style="width:64px;height:64px;background:#1f2937;border-radius:10px;"></div>`}
+                  <div>
+                    <div class="itemName">${escapeHtml(item.title || item.name || "")}</div>
+                    <div class="itemMeta">
+                      ${t("quantity")}: ${money(item.qty)} |
+                      ${t("price")}: ${money(item.price)} |
+                      ${t("rowTotal")}: ${money(item.row_total || (Number(item.qty || 0) * Number(item.price || 0)))}
+                    </div>
+                  </div>
+                </div>
+              `).join("")}
+            </div>
+
+            <div class="orderFooter">
+              <div class="total">${t("total")}: ${money(order.total)}</div>
+              <div class="actions">
+                <button class="btnGray" onclick="changeStatus(${order.orderId || order.id}, 'new')">${t("new")}</button>
+                <button class="btnBlue" onclick="changeStatus(${order.orderId || order.id}, 'preparing')">${t("preparing")}</button>
+                <button class="btnGreen" onclick="changeStatus(${order.orderId || order.id}, 'done')">${t("done")}</button>
+                <button class="btnRed" onclick="deleteOrder(${order.orderId || order.id})">${t("delete")}</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function loadOrders(){
+      try{
+        const j = await apiJson("/api/orders");
+        const rows = Array.isArray(j.rows) ? j.rows : [];
+        window.lastRows = rows;
+
+        updateStats(rows);
+
+        const maxId = rows.reduce((m, x) => Math.max(m, Number(x.orderId || x.id || 0)), 0);
+        if (lastMaxId > 0 && maxId > lastMaxId) {
+          beep();
+        }
+        if (maxId > lastMaxId) {
+          lastMaxId = maxId;
+        }
+
+        renderOrders(rows);
+
+        if (currentLang === "fa") {
+          setMsg("آخرین بروزرسانی: " + new Date().toLocaleTimeString("fa-IR"), "ok");
+        } else if (currentLang === "ar") {
+          setMsg("آخر تحديث: " + new Date().toLocaleTimeString("ar-KW"), "ok");
+        } else {
+          setMsg("Last update: " + new Date().toLocaleTimeString("en-US"), "ok");
+        }
+      }catch(err){
+        ordersBox.innerHTML = `<div class="empty">${t("loadErr")}: ${err.message}</div>`;
+        setMsg(t("loadErr"), "err");
+      }
+    }
+
+    document.getElementById("btnRefresh").addEventListener("click", loadOrders);
+
+    document.getElementById("btnSound").addEventListener("click", () => {
+      soundOn = !soundOn;
+      document.getElementById("btnSound").textContent = soundOn ? t("soundOn") : t("soundOff");
+      setMsg(soundOn ? t("soundEnabledMsg") : t("soundDisabledMsg"), "ok");
+    });
+
+    document.getElementById("langSelect").addEventListener("change", (e) => {
+      currentLang = e.target.value;
+      applyLanguage();
+    });
+
+    applyLanguage();
+    loadOrders();
+    setInterval(loadOrders, 5000);
+
+    window.changeStatus = changeStatus;
+    window.deleteOrder = deleteOrder;
+  </script>
+</body>
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>صفحه ساخت لینک‌های عمومی</title>
+  <style>
+    body {
+      font-family: Tahoma, Arial, sans-serif;
+      background: linear-gradient(135deg, #f7f3ed, #efe6d6);
+      margin: 0;
+      padding: 30px 15px;
+      color: #3c2a1a;
+    }
+
+    .container {
+      max-width: 950px;
+      margin: auto;
+      background: #fffdf9;
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: 0 14px 40px rgba(70, 45, 15, 0.12);
+      border: 1px solid #eadfcf;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 0 0 12px;
+      color: #8a5a1d;
+      font-size: 42px;
+    }
+
+    .desc {
+      text-align: center;
+      color: #7b6856;
+      margin-bottom: 28px;
+      line-height: 2;
+      font-size: 18px;
+    }
+
+    .btns {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 18px;
+      cursor: pointer;
+      background: #9b6724;
+      color: #fff;
+      font-size: 15px;
+      font-weight: bold;
+      box-shadow: 0 6px 15px rgba(155, 103, 36, 0.25);
+      transition: 0.2s;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      opacity: 0.95;
+    }
+
+    button.secondary {
+      background: #6f5a45;
+      box-shadow: 0 6px 15px rgba(111, 90, 69, 0.2);
+    }
+
+    button.danger {
+      background: #b44d38;
+      box-shadow: 0 6px 15px rgba(180, 77, 56, 0.2);
+    }
+
+    .status {
+      background: #f8f2e8;
+      border: 1px solid #e6d8c2;
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 22px;
+      line-height: 1.9;
+      font-size: 16px;
+      min-height: 28px;
+    }
+
+    .linksBox {
+      display: none;
+      margin-top: 12px;
+    }
+
+    .linksBox.show {
+      display: block;
+    }
+
+    .card {
+      background: #fffaf2;
+      border: 1px solid #eadfcf;
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .title {
+      font-size: 22px;
+      font-weight: bold;
+      color: #7a4e18;
+      margin-bottom: 10px;
+    }
+
+    .link {
+      display: block;
+      word-break: break-all;
+      color: #0b57d0;
+      text-decoration: none;
+      font-size: 16px;
+      line-height: 1.9;
+      margin-bottom: 14px;
+    }
+
+    .link:hover {
+      text-decoration: underline;
+    }
+
+    .smallBtns {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .footer {
+      text-align: center;
+      color: #8a7868;
+      margin-top: 18px;
+      line-height: 1.9;
+      font-size: 14px;
+    }
+
+    .baseBox {
+      background: #f8f2e8;
+      border: 1px dashed #d0b38c;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 18px;
+      display: none;
+    }
+
+    .baseBox.show {
+      display: block;
+    }
+
+    .baseTitle {
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #7a4e18;
+    }
+
+    .baseUrl {
+      word-break: break-all;
+      color: #0b57d0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>صفحه ساخت لینک‌های عمومی</h1>
+
+    <div class="desc">
+      با زدن دکمه، سرور تلاش می‌کند تونل Cloudflare را اجرا کند و
+      لینک‌های عمومی مشتری، آشپزخانه و مدیریت را بسازد.
+    </div>
+
+    <div class="btns">
+      <button onclick="startTunnel()">شروع تونل</button>
+      <button class="secondary" onclick="getStatus()">گرفتن لینک‌ها</button>
+      <button class="danger" onclick="stopTunnel()">توقف تونل</button>
+    </div>
+
+    <div id="status" class="status">وضعیت: آماده برای شروع</div>
+
+    <div id="baseBox" class="baseBox">
+      <div class="baseTitle">لینک اصلی تونل</div>
+      <div id="baseUrl" class="baseUrl"></div>
+    </div>
+
+    <div id="linksBox" class="linksBox">
+      <div class="card">
+        <div class="title">لینک مشتری</div>
+        <a id="orderLink" class="link" href="#" target="_blank"></a>
+        <div class="smallBtns">
+          <button onclick="copyLink('orderLink')">کپی لینک</button>
+          <button onclick="openLink('orderLink')">باز کردن</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="title">لینک آشپزخانه</div>
+        <a id="kitchenLink" class="link" href="#" target="_blank"></a>
+        <div class="smallBtns">
+          <button onclick="copyLink('kitchenLink')">کپی لینک</button>
+          <button onclick="openLink('kitchenLink')">باز کردن</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="title">لینک مدیریت</div>
+        <a id="adminLink" class="link" href="#" target="_blank"></a>
+        <div class="smallBtns">
+          <button onclick="copyLink('adminLink')">کپی لینک</button>
+          <button onclick="openLink('adminLink')">باز کردن</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      این صفحه فقط وقتی درست کار می‌کند که سرور Node روشن باشد و
+      cloudflared روی ویندوز نصب شده باشد.
+    </div>
+  </div>
+
+  <script>
+    const statusEl = document.getElementById("status");
+    const linksBox = document.getElementById("linksBox");
+    const baseBox = document.getElementById("baseBox");
+    const baseUrlEl = document.getElementById("baseUrl");
+
+    function setStatus(text) {
+      statusEl.textContent = "وضعیت: " + text;
+    }
+
+    function hideLinks() {
+      linksBox.classList.remove("show");
+      baseBox.classList.remove("show");
+      baseUrlEl.textContent = "";
+      document.getElementById("orderLink").textContent = "";
+      document.getElementById("kitchenLink").textContent = "";
+      document.getElementById("adminLink").textContent = "";
+      document.getElementById("orderLink").href = "#";
+      document.getElementById("kitchenLink").href = "#";
+      document.getElementById("adminLink").href = "#";
+    }
+
+    function fillLinks(data) {
+      if (!data.baseUrl || !data.order || !data.kitchen || !data.admin) {
+        hideLinks();
+        return;
+      }
+
+      baseUrlEl.textContent = data.baseUrl;
+      baseBox.classList.add("show");
+
+      const orderLink = document.getElementById("orderLink");
+      const kitchenLink = document.getElementById("kitchenLink");
+      const adminLink = document.getElementById("adminLink");
+
+      orderLink.href = data.order;
+      orderLink.textContent = data.order;
+
+      kitchenLink.href = data.kitchen;
+      kitchenLink.textContent = data.kitchen;
+
+      adminLink.href = data.admin;
+      adminLink.textContent = data.admin;
+
+      linksBox.classList.add("show");
+    }
+
+    async function startTunnel() {
+      setStatus("در حال اجرای تونل... کمی صبر کن");
+      hideLinks();
+
+      try {
+        const res = await fetch("/api/tunnel/start", {
+          method: "POST"
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || !data.ok) {
+          setStatus(data.message || "خطا در اجرای تونل");
+          return;
+        }
+
+        setStatus(data.message || "تونل روشن شد");
+        fillLinks(data);
+      } catch (err) {
+        setStatus("خطا: " + err.message);
+      }
+    }
+
+    async function getStatus() {
+      setStatus("در حال بررسی وضعیت تونل...");
+      hideLinks();
+
+      try {
+        const res = await fetch("/api/tunnel/status");
+        const data = await res.json();
+
+        if (!res.ok || !data.ok) {
+          setStatus(data.message || "خطا در گرفتن وضعیت تونل");
+          return;
+        }
+
+        if (!data.running) {
+          setStatus("فعلاً تونلی روشن نیست");
+          return;
+        }
+
+        setStatus("تونل روشن است");
+        fillLinks(data);
+      } catch (err) {
+        setStatus("خطا: " + err.message);
+      }
+    }
+
+    async function stopTunnel() {
+      setStatus("در حال توقف تونل...");
+      hideLinks();
+
+      try {
+        const res = await fetch("/api/tunnel/stop", {
+          method: "POST"
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || !data.ok) {
+          setStatus(data.message || "خطا در توقف تونل");
+          return;
+        }
+
+        setStatus(data.message || "تونل متوقف شد");
+      } catch (err) {
+        setStatus("خطا: " + err.message);
+      }
+    }
+
+    async function copyLink(id) {
+      const el = document.getElementById(id);
+      const value = el.href;
+
+      if (!value || value === "#") {
+        alert("لینکی برای کپی وجود ندارد");
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(value);
+        alert("لینک کپی شد");
+      } catch (err) {
+        alert("کپی نشد");
+      }
+    }
+
+    function openLink(id) {
+      const el = document.getElementById(id);
+      const value = el.href;
+
+      if (!value || value === "#") {
+        alert("لینکی برای باز کردن وجود ندارد");
+        return;
+      }
+
+      window.open(value, "_blank");
+    }
+
+    getStatus();
+  </script>
+</body>
+</html>

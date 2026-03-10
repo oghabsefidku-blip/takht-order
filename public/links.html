@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>تبدیل لینک تونل</title>
+
+<style>
+body{
+font-family:tahoma;
+background:#0f172a;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.box{
+background:#1e293b;
+padding:30px;
+border-radius:15px;
+width:500px;
+box-shadow:0 0 20px rgba(0,0,0,0.4);
+}
+
+input{
+width:100%;
+padding:10px;
+border-radius:8px;
+border:none;
+margin-top:10px;
+font-size:16px;
+}
+
+button{
+margin-top:15px;
+padding:10px;
+width:100%;
+background:#22c55e;
+border:none;
+border-radius:8px;
+font-size:16px;
+cursor:pointer;
+}
+
+.links{
+margin-top:20px;
+background:#020617;
+padding:15px;
+border-radius:10px;
+}
+
+a{
+color:#38bdf8;
+display:block;
+margin-top:8px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>ساخت لینک های اصلی</h2>
+
+<input id="tunnel" placeholder="لینک تونل را وارد کن">
+
+<button onclick="makeLinks()">ساخت لینک ها</button>
+
+<div class="links" id="result"></div>
+
+</div>
+
+<script>
+
+function makeLinks(){
+
+let tunnel=document.getElementById("tunnel").value.trim();
+
+if(!tunnel){
+alert("لینک تونل را وارد کن");
+return;
+}
+
+tunnel=tunnel.replace(/\/$/,"");
+
+let order=tunnel+"/order.html";
+let kitchen=tunnel+"/kitchen.html";
+let admin=tunnel+"/admin.html";
+
+document.getElementById("result").innerHTML=`
+
+<b>لینک مشتری</b>
+<a href="${order}" target="_blank">${order}</a>
+
+<b>لینک آشپزخانه</b>
+<a href="${kitchen}" target="_blank">${kitchen}</a>
+
+<b>لینک مدیریت</b>
+<a href="${admin}" target="_blank">${admin}</a>
+
+`;
+
+}
+
+</script>
+
+</body>
+</html>

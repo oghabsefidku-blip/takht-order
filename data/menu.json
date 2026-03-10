@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "name": "چلوکباب",
+    "price": 2.5,
+    "stock": 20,
+    "category": "food",
+    "image": ""
+  },
+  {
+    "id": 2,
+    "name": "سالاد شیرازی",
+    "price": 0.5,
+    "stock": 15,
+    "category": "yogurt_salad",
+    "image": ""
+  },
+  {
+    "id": 3,
+    "name": "نوشابه",
+    "price": 0.25,
+    "stock": 50,
+    "category": "drinks",
+    "image": ""
+  },
+  {
+    "id": 4,
+    "name": "باقلوا",
+    "price": 1,
+    "stock": 12,
+    "category": "desserts",
+    "image": ""
+  }
+]

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+
+<meta charset="UTF-8">
+
+<title>راه اندازی سیستم</title>
+
+<style>
+
+body{
+background:#0f172a;
+color:white;
+font-family:tahoma;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+button{
+font-size:22px;
+padding:20px 40px;
+background:#22c55e;
+border:none;
+border-radius:12px;
+cursor:pointer;
+box-shadow:0 0 20px rgba(0,0,0,0.5);
+}
+
+button:hover{
+background:#16a34a;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<button onclick="run()">راه اندازی سرور و تونل</button>
+
+<script>
+
+function run(){
+window.location.href="run.bat";
+}
+
+</script>
+
+</body>
+</html>

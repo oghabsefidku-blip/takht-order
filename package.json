@@ -1,0 +1,19 @@
+{
+  "name": "takht-order",
+  "version": "1.0.0",
+  "description": "Takht-e Jamshid takeaway ordering (customer + admin + menu manager)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.22.1",
+    "multer": "^1.4.5-lts.1",
+    "socket.io": "^4.8.1",
+    "sqlite3": "^5.1.7"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

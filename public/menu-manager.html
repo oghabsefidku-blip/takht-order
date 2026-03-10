@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>مدیریت منو | تخت جمشید</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+<header>
+  <div class="wrap brand">
+    <div>
+      <h1>مدیریت منو</h1>
+      <div class="sub">آپلود عکس + سه زبان + قیمت + دسته‌بندی + فعال/غیرفعال</div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <a class="btn ghost" href="/admin.html">مدیریت سفارش‌ها</a>
+      <button class="btn" id="refreshBtn">رفرش</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap grid2">
+  <div class="card">
+    <div class="p">
+      <h3 style="margin:0 0 6px 0">افزودن آیتم جدید</h3>
+      <div class="muted">اطلاعات را وارد کن و ذخیره بزن.</div>
+      <hr/>
+
+      <label>نام فارسی</label>
+      <input id="fa" placeholder="مثلاً چلوکباب"/>
+
+      <label>English name</label>
+      <input id="en" placeholder="e.g. Chelo Kebab"/>
+
+      <label>الاسم بالعربية</label>
+      <input id="ar" placeholder="مثلاً كباب"/>
+
+      <label>دسته‌بندی</label>
+      <select id="category">
+        <option value="کباب">کباب</option>
+        <option value="خورشت">خورشت</option>
+        <option value="برنج">برنج</option>
+        <option value="سالاد">سالاد</option>
+        <option value="نوشیدنی">نوشیدنی</option>
+        <option value="دسر">دسر</option>
+        <option value="پیش‌غذا">پیش‌غذا</option>
+        <option value="سایر">سایر</option>
+      </select>
+
+      <div class="grid2">
+        <div>
+          <label>قیمت</label>
+          <input id="price" type="number" step="0.001" placeholder="1.250"/>
+        </div>
+        <div>
+          <label>ترتیب نمایش</label>
+          <input id="sort" type="number" step="1" placeholder="0"/>
+        </div>
+      </div>
+
+      <label>وضعیت</label>
+      <select id="active">
+        <option value="1">فعال</option>
+        <option value="0">غیرفعال</option>
+      </select>
+
+      <label>عکس آیتم</label>
+      <input id="img" type="file" accept="image/*"/>
+
+      <hr/>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <button class="btn ok" id="addBtn">افزودن</button>
+        <span class="muted" id="msg"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="p">
+      <h3 style="margin:0 0 6px 0">لیست منو (ادیت/حذف)</h3>
+      <div class="muted">در ستون دسته می‌توانی جای هر آیتم را عوض کنی و ذخیره بزنی.</div>
+      <hr/>
+      <div id="list"></div>
+    </div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/common.js"></script>
+<script src="/js/menu.js"></script>
+</body>
+</html>

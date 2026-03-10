@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>تخت جمشید</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+<div class="bg-capital" aria-hidden="true">
+  <!-- Modern SVG inspired by Persepolis double-horse capital -->
+  <svg viewBox="0 0 700 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M80 250h540" stroke="rgba(215,177,91,.9)" stroke-width="10" stroke-linecap="round"/>
+    <path d="M210 250V95c0-14 11-25 25-25h230c14 0 25 11 25 25v155" stroke="rgba(215,177,91,.75)" stroke-width="10" stroke-linecap="round"/>
+    <path d="M185 95c-36-38-96-38-132 0" stroke="rgba(215,177,91,.55)" stroke-width="10" stroke-linecap="round"/>
+    <path d="M515 95c36-38 96-38 132 0" stroke="rgba(215,177,91,.55)" stroke-width="10" stroke-linecap="round"/>
+    <path d="M70 128c50 36 92 36 142 0" stroke="rgba(215,177,91,.38)" stroke-width="10" stroke-linecap="round"/>
+    <path d="M630 128c-50 36-92 36-142 0" stroke="rgba(215,177,91,.38)" stroke-width="10" stroke-linecap="round"/>
+    <path d="M245 70h210" stroke="rgba(215,177,91,.35)" stroke-width="10" stroke-linecap="round"/>
+  </svg>
+</div>
+
+<header>
+  <div class="wrap brand">
+    <div>
+      <h1 id="brand">تخت جمشید</h1>
+      <div class="sub" id="sub">سفارش بیرون‌بَر بدون تماس تلفنی</div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <span class="badge">Takeaway</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <div class="p">
+      <label id="lChoose">انتخاب زبان</label>
+      <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <button class="btn" id="btnFa">فارسی</button>
+        <button class="btn" id="btnEn">English</button>
+        <button class="btn" id="btnAr">العربية</button>
+      </div>
+
+      <hr/>
+      <label id="lName">نام</label>
+      <input id="name" placeholder="مثلاً علی"/>
+
+      <label id="lPhone">شماره تماس</label>
+      <input id="phone" placeholder="مثلاً 55512345" inputmode="tel"/>
+
+      <hr/>
+      <button class="btn ok" id="enterBtn">ورود</button>
+      <div class="muted" id="msg" style="margin-top:10px"></div>
+
+      <hr/>
+      <div class="muted" style="font-size:12px">
+        اگر با لینک تبلیغاتی وارد شدی، زبان و منبع (ref) خودکار ثبت می‌شود.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>
