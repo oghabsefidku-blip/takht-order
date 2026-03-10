@@ -1049,17 +1049,38 @@
         body: JSON.stringify(payload)
       });
 
-      sessionStorage.setItem("takht_last_order", JSON.stringify({
-        orderId: j.orderId,
-        total: j.total,
+      const savedOrder = {
+        orderId: j.orderId || j.id || "",
+        id: j.orderId || j.id || "",
+        total: j.total || 0,
         name: customer.name,
         phone: customer.phone,
+        customerName: customer.name,
+        customerPhone: customer.phone,
         address: customer.address,
+        customer_address: customer.address,
         locationText: customer.locationText,
-        notes: customer.notes
-      }));
+        customer_location: customer.locationText,
+        notes: customer.notes,
+        items: items.map(item => ({
+          id: item.id,
+          title: item.title,
+          name: item.title,
+          qty: item.qty,
+          quantity: item.qty,
+          price: item.price,
+          row_total: Number(item.price || 0) * Number(item.qty || 0)
+        }))
+      };
 
-      location.href = "/thanks.html";
+      sessionStorage.setItem("takht_last_order", JSON.stringify(savedOrder));
+
+      const goId = j.orderId || j.id || "";
+      if (goId) {
+        location.href = "/thanks.html?id=" + encodeURIComponent(goId);
+      } else {
+        location.href = "/thanks.html";
+      }
     }catch(err){
       setMsg(t.failedOrder(err.message), "err");
     }

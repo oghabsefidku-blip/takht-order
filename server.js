@@ -3,7 +3,7 @@ const path = require("path");
 const sqlite3 = require("sqlite3").verbose();
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json({ limit: "20mb" }));
 app.use(express.urlencoded({ extended: true }));
@@ -51,7 +51,7 @@ async function tableInfo(tableName) {
 
 async function columnExists(tableName, columnName) {
   const cols = await tableInfo(tableName);
-  return cols.some(c => c.name === columnName);
+  return cols.some((c) => c.name === columnName);
 }
 
 async function ensureColumn(tableName, columnName, definitionSql) {
@@ -59,6 +59,40 @@ async function ensureColumn(tableName, columnName, definitionSql) {
   if (!exists) {
     await run(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${definitionSql}`);
   }
+}
+
+function mapOrderRow(order, items = []) {
+  return {
+    id: order.id,
+    orderId: order.id,
+    customerName: order.customer_name || "",
+    customerPhone: order.customer_phone || "",
+    customer_name: order.customer_name || "",
+    customer_phone: order.customer_phone || "",
+    address: order.customer_address || "",
+    tableOrAddress: order.customer_address || "",
+    customer_address: order.customer_address || "",
+    locationText: order.customer_location || "",
+    customer_location: order.customer_location || "",
+    notes: order.notes || "",
+    total: Number(order.total || 0),
+    status: order.status || "new",
+    createdAt: order.data || "",
+    data: order.data || "",
+    items: items.map((item) => ({
+      id: item.id,
+      menu_item_id: item.id,
+      title: item.title,
+      name: item.title,
+      price: Number(item.price || 0),
+      qty: Number(item.qty || 0),
+      quantity: Number(item.qty || 0),
+      row_total: Number(item.row_total || 0),
+      rowTotal: Number(item.row_total || 0),
+      image: item.image || "",
+      category: item.category || "other"
+    }))
+  };
 }
 
 async function initDb() {
@@ -111,16 +145,19 @@ async function initDb() {
        VALUES (?, ?, ?, ?, ?, ?)`,
       ["چلوکباب", 2.5, 20, "food", "", 1]
     );
+
     await run(
       `INSERT INTO menu_items (name, price, stock, category, image, sort_order)
        VALUES (?, ?, ?, ?, ?, ?)`,
       ["سالاد شیرازی", 0.5, 15, "yogurt_salad", "", 2]
     );
+
     await run(
       `INSERT INTO menu_items (name, price, stock, category, image, sort_order)
        VALUES (?, ?, ?, ?, ?, ?)`,
       ["نوشابه", 0.25, 50, "drinks", "", 3]
     );
+
     await run(
       `INSERT INTO menu_items (name, price, stock, category, image, sort_order)
        VALUES (?, ?, ?, ?, ?, ?)`,
@@ -233,9 +270,16 @@ app.put("/api/menu/:id", async (req, res) => {
     const name = req.body.name !== undefined ? String(req.body.name).trim() : existing.name;
     const price = req.body.price !== undefined ? Number(req.body.price) : Number(existing.price || 0);
     const stock = req.body.stock !== undefined ? Number(req.body.stock) : Number(existing.stock || 0);
-    const category = req.body.category !== undefined ? String(req.body.category || "other").trim() : (existing.category || "other");
-    const image = req.body.image !== undefined ? String(req.body.image || "").trim() : (existing.image || "");
-    const sortOrder = req.body.sort_order !== undefined ? Number(req.body.sort_order) : Number(existing.sort_order || 0);
+    const category =
+      req.body.category !== undefined
+        ? String(req.body.category || "other").trim()
+        : existing.category || "other";
+    const image =
+      req.body.image !== undefined ? String(req.body.image || "").trim() : existing.image || "";
+    const sortOrder =
+      req.body.sort_order !== undefined
+        ? Number(req.body.sort_order)
+        : Number(existing.sort_order || 0);
 
     await run(
       `UPDATE menu_items
@@ -273,7 +317,7 @@ app.delete("/api/menu/:id", async (req, res) => {
   }
 });
 
-/* -------------------- ORDER -------------------- */
+/* -------------------- ORDER CREATE -------------------- */
 
 app.post("/api/order", async (req, res) => {
   try {
@@ -284,23 +328,23 @@ app.post("/api/order", async (req, res) => {
 
     const address = String(
       req.body.address ||
-      req.body.tableOrAddress ||
-      req.body.customerAddress ||
-      ""
+        req.body.tableOrAddress ||
+        req.body.customerAddress ||
+        ""
     ).trim();
 
     const locationText = String(
       req.body.locationText ||
-      req.body.location ||
-      req.body.customerLocation ||
-      ""
+        req.body.location ||
+        req.body.customerLocation ||
+        ""
     ).trim();
 
     const notes = String(
       req.body.notes ||
-      req.body.note ||
-      req.body.suggestions ||
-      ""
+        req.body.note ||
+        req.body.suggestions ||
+        ""
     ).trim();
 
     const items = Array.isArray(req.body.items) ? req.body.items : [];
@@ -328,7 +372,7 @@ app.post("/api/order", async (req, res) => {
         });
       }
 
-      const qty = Number(item.qty || 0);
+      const qty = Number(item.qty || item.quantity || 0);
 
       if (qty <= 0) continue;
 
@@ -406,6 +450,7 @@ app.post("/api/order", async (req, res) => {
     res.json({
       ok: true,
       orderId,
+      id: orderId,
       total
     });
   } catch (err) {
@@ -455,20 +500,7 @@ app.get("/api/orders", async (req, res) => {
         [order.id]
       );
 
-      result.push({
-        id: order.id,
-        orderId: order.id,
-        customerName: order.customer_name,
-        customerPhone: order.customer_phone,
-        address: order.customer_address,
-        tableOrAddress: order.customer_address,
-        locationText: order.customer_location,
-        notes: order.notes,
-        total: order.total,
-        status: order.status,
-        createdAt: order.data,
-        items
-      });
+      result.push(mapOrderRow(order, items));
     }
 
     res.json({
@@ -483,6 +515,84 @@ app.get("/api/orders", async (req, res) => {
     });
   }
 });
+
+/* -------------------- SINGLE ORDER -------------------- */
+
+async function sendSingleOrder(id, res) {
+  const order = await get(
+    `SELECT
+      id,
+      customer_name,
+      customer_phone,
+      COALESCE(customer_address, '') AS customer_address,
+      COALESCE(customer_location, '') AS customer_location,
+      COALESCE(notes, '') AS notes,
+      total,
+      status,
+      data
+    FROM orders
+    WHERE id = ?`,
+    [id]
+  );
+
+  if (!order) {
+    return res.status(404).json({
+      ok: false,
+      error: "سفارش پیدا نشد"
+    });
+  }
+
+  const items = await all(
+    `SELECT
+      menu_item_id AS id,
+      title,
+      price,
+      qty,
+      row_total,
+      image,
+      category
+    FROM order_items
+    WHERE order_id = ?
+    ORDER BY id ASC`,
+    [id]
+  );
+
+  const mapped = mapOrderRow(order, items);
+
+  return res.json({
+    ok: true,
+    ...mapped,
+    order: mapped
+  });
+}
+
+app.get("/api/order/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    await sendSingleOrder(id, res);
+  } catch (err) {
+    console.log("GET ORDER ERROR:", err);
+    res.status(500).json({
+      ok: false,
+      error: "خطا در دریافت سفارش"
+    });
+  }
+});
+
+app.get("/api/orders/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    await sendSingleOrder(id, res);
+  } catch (err) {
+    console.log("GET ORDER ERROR:", err);
+    res.status(500).json({
+      ok: false,
+      error: "خطا در دریافت سفارش"
+    });
+  }
+});
+
+/* -------------------- ORDER STATUS -------------------- */
 
 app.post("/api/orders/:id/status", async (req, res) => {
   try {
@@ -539,7 +649,7 @@ app.delete("/api/orders/:id", async (req, res) => {
 initDb()
   .then(() => {
     app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
+      console.log(`Server running on port ${PORT}`);
     });
   })
   .catch((err) => {

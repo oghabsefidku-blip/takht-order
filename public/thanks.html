@@ -136,6 +136,18 @@
       padding:12px 0;
     }
 
+    .error{
+      color:#b91c1c;
+      font-size:18px;
+      padding:12px 0;
+    }
+
+    .loading{
+      color:#64748b;
+      font-size:18px;
+      padding:12px 0;
+    }
+
     @media (max-width:700px){
       .title{font-size:28px}
       .sectionTitle{font-size:26px}
@@ -178,8 +190,10 @@
 
     <div class="card">
       <div class="sectionTitle">أصناف الطلب</div>
-      <div id="countBox" class="sub"></div>
-      <div id="items" class="items"></div>
+      <div id="countBox" class="sub">0 صنف</div>
+      <div id="items" class="items">
+        <div class="loading">جاري تحميل الطلب...</div>
+      </div>
     </div>
 
     <div class="card">
@@ -212,28 +226,107 @@
       location.href = "/order.html";
     }
 
-    const raw = sessionStorage.getItem("takht_last_order");
-    let order = null;
-
-    try{
-      order = raw ? JSON.parse(raw) : null;
-    }catch(e){
-      order = null;
+    function getOrderIdFromUrl(){
+      const params = new URLSearchParams(location.search);
+      return params.get("id") || params.get("orderId") || "";
     }
 
-    const orderIdBox = document.getElementById("orderIdBox");
-    const totalBox = document.getElementById("totalBox");
-    const customerBox = document.getElementById("customerBox");
-    const countBox = document.getElementById("countBox");
-    const itemsBox = document.getElementById("items");
+    function readOrderFromSession(){
+      try{
+        const raw = sessionStorage.getItem("takht_last_order");
+        return raw ? JSON.parse(raw) : null;
+      }catch(e){
+        return null;
+      }
+    }
 
-    if (!order) {
-      orderIdBox.textContent = "#-";
-      totalBox.textContent = "الإجمالي: 0";
-      customerBox.textContent = "العميل: -";
-      countBox.textContent = "0 صنف";
-      itemsBox.innerHTML = '<div class="empty">لا توجد بيانات طلب محفوظة.</div>';
-    } else {
+    async function fetchOrderFromServer(id){
+      if(!id) return null;
+
+      try{
+        const res = await fetch("/api/order/" + encodeURIComponent(id), {
+          cache: "no-store"
+        });
+
+        if(!res.ok) return null;
+
+        const data = await res.json();
+
+        if(data && data.order) return data.order;
+        if(data && data.id) return data;
+
+        return null;
+      }catch(e){
+        return null;
+      }
+    }
+
+    function normalizeOrder(order, fallbackId){
+      if(!order) return null;
+
+      const normalized = {
+        orderId:
+          order.orderId ??
+          order.id ??
+          fallbackId ??
+          "-",
+
+        name:
+          order.name ??
+          order.customerName ??
+          order.customer_name ??
+          order.customer ??
+          "-",
+
+        phone:
+          order.phone ??
+          order.customerPhone ??
+          order.customer_phone ??
+          order.mobile ??
+          order.tel ??
+          "-",
+
+        total:
+          order.total ??
+          order.amount ??
+          order.sum ??
+          0,
+
+        items: Array.isArray(order.items) ? order.items : []
+      };
+
+      normalized.items = normalized.items.map(item => ({
+        title: item.title ?? item.name ?? "",
+        name: item.name ?? item.title ?? "",
+        qty: item.qty ?? item.quantity ?? 1,
+        quantity: item.quantity ?? item.qty ?? 1,
+        price: item.price ?? item.unitPrice ?? item.cost ?? 0,
+        row_total:
+          item.row_total ??
+          item.rowTotal ??
+          ((Number(item.qty ?? item.quantity ?? 0)) * Number(item.price ?? item.unitPrice ?? item.cost ?? 0)),
+        image: item.image ?? item.img ?? item.photo ?? ""
+      }));
+
+      return normalized;
+    }
+
+    function renderOrder(order){
+      const orderIdBox = document.getElementById("orderIdBox");
+      const totalBox = document.getElementById("totalBox");
+      const customerBox = document.getElementById("customerBox");
+      const countBox = document.getElementById("countBox");
+      const itemsBox = document.getElementById("items");
+
+      if (!order) {
+        orderIdBox.textContent = "#-";
+        totalBox.textContent = "الإجمالي: 0";
+        customerBox.textContent = "العميل: -";
+        countBox.textContent = "0 صنف";
+        itemsBox.innerHTML = '<div class="error">لا توجد بيانات طلب محفوظة.</div>';
+        return;
+      }
+
       orderIdBox.textContent = "#" + (order.orderId ?? "-");
       totalBox.textContent = "الإجمالي: " + money(order.total);
       customerBox.textContent = "العميل: " + (order.name || "-") + " - " + (order.phone || "-");
@@ -243,21 +336,48 @@
 
       if (!items.length) {
         itemsBox.innerHTML = '<div class="empty">لا توجد أصناف داخل الطلب.</div>';
-      } else {
-        itemsBox.innerHTML = items.map(item => `
+        return;
+      }
+
+      itemsBox.innerHTML = items.map(item => {
+        const title = escapeHtml(item.title || item.name || "");
+        const qty = money(item.qty || item.quantity || 1);
+        const price = money(item.price);
+        const rowTotal = money(item.row_total);
+        const imageHtml = item.image
+          ? `<img src="${escapeHtml(item.image)}" alt="${title}" onerror="this.style.display='none'">`
+          : "";
+
+        return `
           <div class="item">
-            ${item.image ? `<img src="${item.image}" alt="">` : `<img src="" alt="" style="display:none;">`}
+            ${imageHtml}
             <div class="itemText">
-              <div class="itemName">${escapeHtml(item.title || item.name || "")}</div>
+              <div class="itemName">${title}</div>
               <div class="itemMeta">
-                الكمية: ${money(item.qty)} |
-                السعر: ${money(item.price)}
+                الكمية: ${qty} |
+                السعر: ${price} |
+                المجموع: ${rowTotal}
               </div>
             </div>
           </div>
-        `).join("");
-      }
+        `;
+      }).join("");
     }
+
+    async function initPage(){
+      const urlId = getOrderIdFromUrl();
+
+      let order = await fetchOrderFromServer(urlId);
+
+      if (!order) {
+        order = readOrderFromSession();
+      }
+
+      order = normalizeOrder(order, urlId);
+      renderOrder(order);
+    }
+
+    initPage();
   </script>
 </body>
 </html>
